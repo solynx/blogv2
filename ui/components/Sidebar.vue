@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="bg-white shadow-lg h-screen sticky top-0 left-0 min-w-[240px] py-6 px-4 font-[sans-serif] hidden md:display overflow-auto"
+    class="bg-white shadow-lg h-screen sticky top-0 left-0 w-full md:min-w-[240px] py-6 px-4 font-[sans-serif] hidden md:block overflow-auto"
   >
     <ul>
       <li>
