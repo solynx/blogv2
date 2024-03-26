@@ -2,9 +2,10 @@ package main
 
 import (
 	"blogv2/app"
+	"blogv2/router"
 )
 
 func main() {
-	app := app.Application{}
-	app.ApplicationSetup()
+	app.Setup()
+	router.Setup()
 }
