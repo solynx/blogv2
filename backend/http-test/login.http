@@ -1,0 +1,9 @@
+POST http://localhost:8080/api/account/login.json
+Authorization: Bearer 192929
+x-api-key: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1
+Content-Type: application/json
+
+{
+    "email" : "alidoan@gmail.com",
+    "password" : "alo1133"
+}
