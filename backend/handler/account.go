@@ -3,7 +3,7 @@ package handler
 import (
 	"blogv2/config"
 	"blogv2/model"
-	"blogv2/services"
+	repo "blogv2/repositories"
 
 	"crypto/sha256"
 	"encoding/hex"
@@ -19,16 +19,16 @@ type Identity struct {
 func Login(c *fiber.Ctx) error {
 	var userInfo Identity
 	if err := c.BodyParser(&userInfo); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Bad Request"})
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request"})
 	}
 	hashedPassword := sha256.Sum256([]byte(userInfo.Password))
 	userQuery := model.User{
 		Email:    userInfo.Email,
 		Password: hex.EncodeToString(hashedPassword[:]),
 	}
-	user, row := services.GetUser(&userQuery)
+	user, row := repo.GetUser(&userQuery)
 	if row == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Bad Request"})
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request"})
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: user})
 }
@@ -36,7 +36,7 @@ func Login(c *fiber.Ctx) error {
 func Register(c *fiber.Ctx) error {
 	var userInfo Identity
 	if err := c.BodyParser(&userInfo); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Bad Request"})
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request"})
 	}
 	hashedPassword := sha256.Sum256([]byte(userInfo.Password))
 	var newUser = model.User{
@@ -44,9 +44,9 @@ func Register(c *fiber.Ctx) error {
 		Password: hex.EncodeToString(hashedPassword[:]),
 		Role:     model.ADMIN_ROLE,
 	}
-	err := services.CreateUser(&newUser)
+	err := repo.CreateUser(&newUser)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Register failed!"})
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Register failed!"})
 	}
-	return c.Status(fiber.StatusCreated).JSON(&config.ErrorSchema{Code: 200, Status: true, Message: "Create user successfully!"})
+	return c.Status(fiber.StatusCreated).JSON(&config.Response{Code: 200, Status: true, Message: "Create user successfully!"})
 }

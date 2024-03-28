@@ -1,0 +1,9 @@
+POST http://localhost:8080/api/v1/system/post.json
+Content-Type: application/json
+x-api-key: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1
+
+{
+    "title" : "First title7",
+    "description" : "this is description",
+    "content" : "this is content"
+}

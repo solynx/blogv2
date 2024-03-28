@@ -3,30 +3,19 @@
     <div class="w-full h-full">
       <div>
         <h2 class="text-3xl font-extrabold text-[#333] inline-block">
-          LATEST BLOGS
+          {{ props.header?.title ?? 'Information' }}
         </h2>
         <p class="text-gray-400 text-sm mt-4">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-          accumsan, nunc et tempus blandit, metus mi consectetur felis turpis
-          vitae ligula.
+          {{ props.header?.description ?? '' }}
         </p>
       </div>
-      <hr class="md:my-6 my-3" />
-      <div class="grid md:gap-4">
-        <Post />
-        <Post />
-      </div>
-      <Pagination class="mt-5" />
+      <slot/>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  setup() {
-    return {};
-  },
-};
+<script setup>
+const props = defineProps(['header'])
 </script>
 
 <style lang="scss" scoped></style>

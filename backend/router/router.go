@@ -33,8 +33,9 @@ func setupRouter(app *fiber.App) {
 	account.Post("/login.json", handler.Login)
 
 	//manager for CMS admin calling
-	management := api.Group("/management")
-	management.Get("/login", handler.Login)
+	system := v1.Group("/system")
+	system.Get("/login.json", handler.Login)
+	system.Post("/post.json", handler.CreatePost)
 }
 
 func validateAccountApiKey(c *fiber.Ctx, key string) (bool, error) {
