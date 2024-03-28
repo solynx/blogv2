@@ -1,0 +1,19 @@
+<template>
+    <div>
+        This is about file
+    </div>
+</template>
+
+<script>
+export default {
+    setup () {
+        
+
+        return {}
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+
+</style>

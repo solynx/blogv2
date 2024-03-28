@@ -1,18 +1,27 @@
 <template>
   <div>
     <Content :header="header">
-      <hr class="md:my-6 my-3" />
       <div class="grid md:gap-4">
         <PostDetail />
       </div>
-      <Pagination class="mt-5" />
+      <div>
+        <h2 class="text-3xl font-segoe text-bold inline-block mt-3">
+          Bài viết liên quan
+        </h2>
+        <div class="grid gap-4 grid-cols-1 md:grid-cols-4 pt-3">
+          <PostSmallCart/>
+          <PostSmallCart/>
+          <PostSmallCart/>
+          <PostSmallCart/>
+        </div>
+      </div>
     </Content>
   </div>
 </template>
 
 <script setup>
 const header = {
-  title: "Post detail",
+  title: "Tìm hiểu công cụ Github",
 };
 </script>
 

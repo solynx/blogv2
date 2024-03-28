@@ -9,7 +9,12 @@ module.exports = {
     "./error.vue",
   ],
   theme: {
-    extend: {},
+    fontFamily: {
+      'sans': ['ui-sans-serif', 'system-ui'],
+      'serif': ['ui-serif', 'Georgia'],
+      'mono': ['ui-monospace', 'SFMono-Regular'],
+      'segoe': ['Segoe Ui Light', 'ui-sans-serif', 'system-ui'],
+    }
   },
   plugins: [],
 };
