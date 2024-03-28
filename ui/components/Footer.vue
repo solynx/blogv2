@@ -3,20 +3,20 @@ import { ref } from "vue";
 
 const menus = ref([
   {
-    title: "Resources",
+    title: "Projects",
     items: [
-      { text: "SaaS Development", link: "javascript:void(0)" },
-      { text: "Our Products", link: "javascript:void(0)" },
-      { text: "User Flow", link: "javascript:void(0)" },
-      { text: "User Strategy", link: "javascript:void(0)" },
+      { text: "Retherer Social", link: "javascript:void(0)" },
+      { text: "Reblog", link: "javascript:void(0)" },
+      { text: "Retherer Ecomerce", link: "javascript:void(0)" },
+      { text: "Retherer Pay", link: "javascript:void(0)" },
     ],
   },
   {
-    title: "Company",
+    title: "Information",
     items: [
-      { text: "About TailGrids", link: "javascript:void(0)" },
+      { text: "Portfolio", link: "javascript:void(0)" },
       { text: "Contact & Support", link: "javascript:void(0)" },
-      { text: "Success History", link: "javascript:void(0)" },
+      { text: "Company", link: "javascript:void(0)" },
       { text: "Setting & Privacy", link: "javascript:void(0)" },
     ],
   },
@@ -172,7 +172,7 @@ const menus = ref([
               </a>
             </div>
             <p class="text-base text-body-color dark:text-dark-6">
-              &copy; 2025 TailGrids
+              &copy; Blog
             </p>
           </div>
         </div>

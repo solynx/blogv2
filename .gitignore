@@ -1,3 +1,5 @@
 /backend/tmp
 /backend/.env
 /ui/.nuxt
+/cms/.nuxt
+/cms/node_modules
