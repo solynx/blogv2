@@ -4,6 +4,10 @@ import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  modules: ["nuxt-tiptap-editor"],
+  tiptap: {
+    prefix: "Tiptap", //prefix for Tiptap components
+  },
   css: ["~/assets/css/main.css"],
   postcss: {
     plugins: {
