@@ -24,6 +24,7 @@ func CreatePost(c *fiber.Ctx) error {
 	if err := c.BodyParser(&args); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request", Error: "Please check args sended"})
 	}
+	return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request", Error: "Please check args sended OK"})
 	newPost := &model.Post{Title: args.Title, UserId: uuid.MustParse("9883e1f5-bab9-42bf-af2e-34e0a3df0a6d"), Description: args.Description, Content: args.Content, SEOTitle: args.SEOTitle, SEOKeyword: args.SEOKeyword, SEODescription: args.SEODescription}
 	newPost.ID = uuid.New()
 	newPost.Slug = helpers.GetSlug(newPost.Title, newPost.ID)

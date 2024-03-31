@@ -7,4 +7,5 @@ type Response struct {
 	Data    interface{} `json:"data,omitempty"`
 	Error   string      `json:"error,omitempty"`
 	Row     int64       `json:"row,omitempty"`
+	Token     string      `json:"token,omitempty"`
 }

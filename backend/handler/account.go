@@ -1,14 +1,19 @@
 package handler
 
 import (
+	"blogv2/app"
 	"blogv2/config"
 	"blogv2/model"
 	repo "blogv2/repositories"
+	"log"
+	"time"
 
 	"crypto/sha256"
 	"encoding/hex"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type Identity struct {
@@ -16,21 +21,50 @@ type Identity struct {
 	Password string `json:"password"`
 }
 
+type PayloadClaims struct {
+	Payload model.UserPayload `json:"payload"`
+	jwt.RegisteredClaims
+}
+
+
 func Login(c *fiber.Ctx) error {
 	var userInfo Identity
 	if err := c.BodyParser(&userInfo); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request"})
 	}
 	hashedPassword := sha256.Sum256([]byte(userInfo.Password))
-	userQuery := model.User{
-		Email:    userInfo.Email,
-		Password: hex.EncodeToString(hashedPassword[:]),
-	}
-	user, row := repo.GetUser(&userQuery)
+
+	user, row := repo.FindUserLogin(userInfo.Email, hex.EncodeToString(hashedPassword[:]))
 	if row == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request"})
+		return c.SendStatus(fiber.StatusUnauthorized)
 	}
-	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: user})
+	//update last login
+	user.LastLoginId = uuid.New()
+	row, err := repo.UpdateUser(user) 
+
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Please check connect"})
+	}
+	if row < 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Please check id"})
+	}
+	//init userpayload for jwt
+	userPayload := model.UserPayload{ID: user.ID, LastLoginId: user.LastLoginId}
+	// Create the Claims
+    claims := jwt.MapClaims{
+        "payload":  userPayload,
+        "exp":   time.Now().Add(time.Hour * 168).Unix(),
+    }
+	// Create token
+    token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	// Generate encoded token and send it as response.
+    t, err := token.SignedString(app.Core.Server.RouterPrivateKey)
+    if err != nil {
+		log.Fatal(err)
+        return c.SendStatus(fiber.StatusInternalServerError)
+    }
+	
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: user, Token: t})
 }
 
 func Register(c *fiber.Ctx) error {

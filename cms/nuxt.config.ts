@@ -3,10 +3,16 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      apiURL: process.env.API_URL,
+    },
+    apiKey: "",
+  },
   devtools: { enabled: true },
   modules: ["nuxt-tiptap-editor"],
   tiptap: {
-    prefix: "Tiptap", //prefix for Tiptap components
+    prefix: "Tiptap", //prefix for Tiptap imports, composables not included
   },
   css: ["~/assets/css/main.css"],
   postcss: {

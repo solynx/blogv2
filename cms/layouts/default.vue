@@ -1,63 +1,71 @@
 <template>
-  <NMessageProvider>
-    <div class="relative h-screen">
-      <n-layout position="absolute">
-        <n-layout-header style="height: 64px; padding: 24px; display: flex;" bordered    class="bg-gradient-to-r from-[#000428] to-[#004e92]">
-          <div style="width: 240px">
-            <img
-            src="https://api.dicebear.com/8.x/identicon/svg?seed=Coco"
-            alt="avatar"
-            class="w-6 h-6"
-          />
-          </div>
-          <div class="text-white">
-            HEADER
-          </div>
-        </n-layout-header>
-        <n-layout has-sider position="absolute" style="top: 64px; bottom: 64px" >
-          <ClientOnly>
-            <n-space vertical>
-              <n-layout has-sider>
-                <n-layout-sider
-                  bordered
-                  collapse-mode="width"
-                  :collapsed-width="64"
-                  :width="240"
-                  :collapsed="collapsed"
-                  show-trigger
-                  @collapse="collapsed = true"
-                  @expand="collapsed = false"
-                >
-                  <n-menu
-                    v-model:value="activeKey"
-                    :collapsed="collapsed"
+  <NModalProvider>
+    <NMessageProvider>
+      <div class="relative h-screen">
+        <n-layout position="absolute">
+          <n-layout-header
+            style="height: 64px; padding: 24px; display: flex"
+            bordered
+            class="bg-gradient-to-r from-[#000428] to-[#004e92]"
+          >
+            <div style="width: 240px">
+              <img
+                src="https://api.dicebear.com/8.x/identicon/svg?seed=Coco"
+                alt="avatar"
+                class="w-6 h-6"
+              />
+            </div>
+            <div class="text-white">HEADER</div>
+          </n-layout-header>
+          <n-layout
+            has-sider
+            position="absolute"
+            style="top: 64px; bottom: 64px"
+          >
+            <ClientOnly>
+              <n-space vertical>
+                <n-layout has-sider>
+                  <n-layout-sider
+                    bordered
+                    collapse-mode="width"
                     :collapsed-width="64"
-                    :collapsed-icon-size="22"
-                    :options="menuOptions"
-                  />
-                </n-layout-sider>
-              </n-layout>
-            </n-space>
-          </ClientOnly>
-          <n-layout content-style="padding: 24px;">
-            <slot />
+                    :width="240"
+                    :collapsed="collapsed"
+                    show-trigger
+                    @collapse="collapsed = true"
+                    @expand="collapsed = false"
+                  >
+                    <n-menu
+                      v-model:value="activeKey"
+                      :collapsed="collapsed"
+                      :collapsed-width="64"
+                      :collapsed-icon-size="22"
+                      :options="menuOptions"
+                    />
+                  </n-layout-sider>
+                </n-layout>
+              </n-space>
+            </ClientOnly>
+            <n-layout embedded content-style="padding: 24px;">
+              <slot />
+            </n-layout>
           </n-layout>
+          <n-layout-footer
+            bordered
+            position="absolute"
+            style="height: 64px; padding: 24px"
+            class="bg-gradient-to-l from-[#000428] to-[#004e92]"
+          >
+            Footer
+          </n-layout-footer>
         </n-layout>
-        <n-layout-footer
-          bordered
-          position="absolute"
-          style="height: 64px; padding: 24px"
-          class="bg-gradient-to-l from-[#000428] to-[#004e92]"
-        >
-          Footer
-        </n-layout-footer>
-      </n-layout>
-    </div>
-  </NMessageProvider>
+      </div>
+    </NMessageProvider>
+  </NModalProvider>
 </template>
 
 <script lang="ts" setup>
-import { NIcon, NMessageProvider } from "naive-ui";
+import { NIcon, NMessageProvider, NModalProvider } from "naive-ui";
 import type { MenuOption } from "naive-ui";
 import MyNuxtLink from "~/components/MyNuxtLink.ts";
 import {
@@ -87,7 +95,7 @@ const menuOptions: MenuOption[] = [
     children: [
       {
         type: "group",
-        label: "Bài viết",
+        label: "Bài viết & Danh mục",
         key: "post",
         children: [
           {
@@ -107,29 +115,24 @@ const menuOptions: MenuOption[] = [
               h(
                 MyNuxtLink,
                 {
-                  to: "/blog/post/upload",
+                  to: "/blog/post/create",
                 },
                 "Đăng bài"
               ),
-            key: "upload-post",
+            key: "create-post",
             icon: renderIcon(AddIcon),
           },
-        ],
-      },
-      {
-        type: "group",
-        label: "Danh mục",
-        key: "category",
-        children: [
           {
-            label: "Tất cả danh mục",
+            label: () =>
+              h(
+                MyNuxtLink,
+                {
+                  to: "/blog/category",
+                },
+                "Danh mục"
+              ),
             key: "category-all",
             icon: renderIcon(BookIcon),
-          },
-          {
-            label: "Thêm danh mục",
-            key: "new-category",
-            icon: renderIcon(AddIcon),
           },
         ],
       },
@@ -139,12 +142,26 @@ const menuOptions: MenuOption[] = [
         key: "author",
         children: [
           {
-            label: "Danh sách tác giả",
+            label: () =>
+              h(
+                MyNuxtLink,
+                {
+                  to: "/blog/author",
+                },
+                "Tất cả"
+              ),
             key: "author-all",
             icon: renderIcon(PersonIcon),
           },
           {
-            label: "Thêm tác giả",
+            label: () =>
+              h(
+                MyNuxtLink,
+                {
+                  to: "/blog/author/create",
+                },
+                "Thêm mới"
+              ),
             key: "new-author",
             icon: renderIcon(AddIcon),
           },

@@ -7,20 +7,18 @@ import (
 
 type User struct {
 	Model    `gorm:"embedded"`
-	Email    string          `gorm:"uniqueIndex" json:"email"`
-	Password string          `json:"password"`
-	FullName string          `json:"full_name"`
-	Role     string          `json:"role"`
-	Verified bool            `gorm:"default:false" json:"is_verify"`
-	Metadata *datatypes.JSON `json:"metadata"`
+	Email    string          `gorm:"uniqueIndex" json:"email,omitempty"`
+	Password string          `json:"password,omitempty"`
+	FullName string          `json:"full_name,omitempty"`
+	Role     string          `json:"role,omitempty"`
+	Verified bool            `gorm:"default:false" json:"is_verify,omitempty"`
+	LastLoginId uuid.UUID `gorm:"index,default:NULL" json:"login_id,omitempty"`
+	Metadata *datatypes.JSON `json:"metadata,omitempty"`
 }
 
-type UserData struct {
+type UserPayload struct {
 	ID       uuid.UUID `json:"id"`
-	Email    string    `json:"email"`
-	FullName string    `json:"full_name"`
-	Verified bool      `json:"is_verify"`
-	ImageUrl string    `json:"image_url"`
+	LastLoginId uuid.UUID `json:"login_id"`
 }
 
 const (

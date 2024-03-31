@@ -1,0 +1,7 @@
+POST http://localhost:8080/api/v1/system/category.json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTI0NzMxNDUsInBheWxvYWQiOnsiaWQiOiIyMDg0MmI4Yi0yMGI5LTRhMDctODg0Ni1lYjZjYzljODU3ODgiLCJsb2dpbl9pZCI6ImI4ZTgzMTJhLWJmYWMtNDMwZC1iNWE4LTBkYzU0MjVkYmE3ZiJ9fQ.gzRs9K5nvCoUNRYH_PY7RKwQ4aV1Bi2PcFDu6bYZd82NHBhWXxlDLRGrUNAlDD5MoRMf6EZ1hgUk1x26itWrE9k1__s9FQmeUCp-6jNbjdi_kMyWUcTXvw_TVB49hsbQXfil5optrv-WhVZP-UlNXp-V1DVCibZkkU49PQmN3SOXTlRpkIF5G6cM_Wk4D9DwiJ4zX38Z9cnIxTjiDyP65WNbHvhdw-hs90d8vk2-yLddVM18MWe05N8qXBCErfocLjy7ZTIL29rOLKFeglKqLtthKPnkYCbWgc_k0LLzjB9bN4dgehtb2TSqQZiHdFz3VIEGs3ZsdQQUJvA_unO50Q
+
+{    "name" : "Go Fiber120",
+    "index": 1
+}
