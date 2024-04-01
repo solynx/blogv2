@@ -1,7 +1,6 @@
-import { NFormItem } from 'naive-ui';
 <template>
   <main
-    class="w-full h-screen flex flex-col items-center justify-center bg-gray-50 sm:px-4 overflow-hidden"
+    class="h-screen flex flex-col items-center justify-center bg-gray-50 sm:px-4 overflow-hidden"
   >
     <div class="w-full text-gray-600 sm:max-w-md">
       <div class="text-center">
@@ -33,6 +32,7 @@ import { NFormItem } from 'naive-ui';
             size="large"
             :block="true"
             @click="handleLogin"
+            attr-type="submit"
           >
             Login
           </n-button>
@@ -52,15 +52,21 @@ import { useMessage } from "naive-ui";
 const identity = ref<Identity>({ email: "", password: "" });
 const message = useMessage();
 const { $restApi } = useNuxtApp();
-const handleLogin = async () => {
-  const { data } = await $fetch("/api/login", {
+const handleLogin = async (event) => {
+  event.preventDefault();
+
+  const data = await $fetch("/api/login", {
     method: "post",
     body: identity.value,
   });
-  if(data.status) {
-    message.success("Xác minh thành công!");
-    return navigateTo('/')
+
+  if (data.status) {
+    message.loading("Xác minh thành công! Vui lòng chờ...", { duration: 800 });
+    setTimeout(() => {
+      return navigateTo("/");
+    }, 1000);
+  } else {
+    return message.error("Vui lòng kiểm tra lại thông tin!");
   }
-  return  message.error("Vui lòng kiểm tra lại thông tin!");
 };
 </script>

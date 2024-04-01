@@ -3,7 +3,7 @@ import type { ErrorResponse, UserTokenResponse } from "~/types/response";
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const runtimeConfig = useRuntimeConfig();
-  const token = getCookie(event, 'token');
+  const token = getCookie(event, "token");
   const request = axios.create({
     baseURL: runtimeConfig.public.apiURL,
     headers: {
@@ -11,10 +11,9 @@ export default defineEventHandler(async (event) => {
       "Content-Type": "application/json",
     },
   });
-  const data = request
+  const data = await request
     .post("/account/login.json", body)
     .then((response) => {
-
       let userInfo: UserTokenResponse = {
         token: "xxx",
         metadata: null,
@@ -23,9 +22,9 @@ export default defineEventHandler(async (event) => {
       };
       if (response.data) {
         userInfo.token = response.data?.token;
-        setCookie(event, 'token', userInfo.token)
+        setCookie(event, "token", userInfo.token);
         userInfo.metadata = response.data?.metadata;
-        userInfo.status = response.data?.status
+        userInfo.status = response.data?.status;
       }
       return userInfo;
     })

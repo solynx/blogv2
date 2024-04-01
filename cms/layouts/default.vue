@@ -2,20 +2,13 @@
   <NModalProvider>
     <NMessageProvider>
       <div class="relative h-screen">
-        <n-layout position="absolute">
+        <n-layout position="absolute" has-sider>
           <n-layout-header
             style="height: 64px; padding: 24px; display: flex"
             bordered
-            class="bg-gradient-to-r from-[#000428] to-[#004e92]"
+            class="bg-[#4CB5F5] items-center justify-between"
           >
-            <div style="width: 240px">
-              <img
-                src="https://api.dicebear.com/8.x/identicon/svg?seed=Coco"
-                alt="avatar"
-                class="w-6 h-6"
-              />
-            </div>
-            <div class="text-white">HEADER</div>
+            <Header />
           </n-layout-header>
           <n-layout
             has-sider
@@ -54,7 +47,7 @@
             bordered
             position="absolute"
             style="height: 64px; padding: 24px"
-            class="bg-gradient-to-l from-[#000428] to-[#004e92]"
+            class="bg-[#4CB5F5]"
           >
             Footer
           </n-layout-footer>
@@ -65,7 +58,7 @@
 </template>
 
 <script lang="ts" setup>
-import { NIcon, NMessageProvider, NModalProvider } from "naive-ui";
+import { NIcon } from "naive-ui";
 import type { MenuOption } from "naive-ui";
 import MyNuxtLink from "~/components/MyNuxtLink.ts";
 import {
@@ -78,7 +71,8 @@ import {
   AddOutline as AddIcon,
 } from "@vicons/ionicons5";
 
-const hasCookie = useCookie('token') 
+const token = useCookie("token");
+
 function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) });
 }

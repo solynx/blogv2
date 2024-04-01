@@ -4,6 +4,6 @@ x-api-key: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1
 Content-Type: application/json
 
 {
-    "email" : "alidoan1@gmail.com",
-    "password" : "alo1133"
+    "email" : "alidoan@gmail.com",
+    "password" : "alo123"
 }

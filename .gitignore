@@ -1,4 +1,4 @@
-/backend/tmp
+/backend/tmp/*
 /backend/.env
 /ui/.nuxt
 /cms/.nuxt
