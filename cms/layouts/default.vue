@@ -78,6 +78,7 @@ import {
   AddOutline as AddIcon,
 } from "@vicons/ionicons5";
 
+const hasCookie = useCookie('token') 
 function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) });
 }

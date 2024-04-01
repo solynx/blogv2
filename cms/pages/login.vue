@@ -57,7 +57,10 @@ const handleLogin = async () => {
     method: "post",
     body: identity.value,
   });
-  console.log(data);
-  message.success("Login ok");
+  if(data.status) {
+    message.success("Xác minh thành công!");
+    return navigateTo('/')
+  }
+  return  message.error("Vui lòng kiểm tra lại thông tin!");
 };
 </script>
