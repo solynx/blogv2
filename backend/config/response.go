@@ -8,4 +8,5 @@ type Response struct {
 	Error   string      `json:"error,omitempty"`
 	Row     int64       `json:"row,omitempty"`
 	Token     string      `json:"token,omitempty"`
+	Metadata     interface{}      `json:"metadata,omitempty"`
 }

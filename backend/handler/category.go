@@ -57,11 +57,11 @@ func GetCategory(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
 	}
-	data, err := repositories.GetListCategory(*query)
+	data, pagination, err := repositories.GetListCategory(*query)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "failed to get data"})
 	}
-	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data})
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data, Metadata: pagination})
 }
 
 func UpdateCategory(c *fiber.Ctx) error {

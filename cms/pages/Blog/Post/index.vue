@@ -32,7 +32,7 @@ import {
   PencilSharp as PencilIcon,
   TrashOutline as TrashIcon,
 } from "@vicons/ionicons5";
-type Song = {
+type CategoryDataTable = {
   no: number;
   title: string;
   author: string;
@@ -45,8 +45,8 @@ const pagination = {
 const createColumns = ({
   play,
 }: {
-  play: (row: Song) => void;
-}): DataTableColumns<Song> => {
+  play: (row: CategoryDataTable) => void;
+}): DataTableColumns<CategoryDataTable> => {
   return [
     {
       title: "No",
@@ -61,7 +61,7 @@ const createColumns = ({
       key: "author",
     },
     {
-      title: "Ngày đăng",
+      title: "Ngày tạo",
       key: "createdAt",
     },
     {
@@ -111,7 +111,7 @@ const createColumns = ({
   ];
 };
 
-const data: Song[] = [
+const data: CategoryDataTable[] = [
   { no: 3, title: "Wonderwall", author: "John Doe", createdAt: "12/12/2024" },
   {
     no: 4,
@@ -128,10 +128,12 @@ const data: Song[] = [
 ];
 const message = useMessage();
 const columns = createColumns({
-  play(row: Song) {
+  play(row: CategoryDataTable) {
     message.info(`Play ${row.title}`);
   },
 });
+const listCategory = await useRestApi("get", "/v1/system/category.json", {});
+console.log(listCategory);
 </script>
 
 <style lang="scss" scoped></style>
