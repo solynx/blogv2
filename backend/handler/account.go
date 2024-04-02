@@ -26,7 +26,6 @@ type PayloadClaims struct {
 	jwt.RegisteredClaims
 }
 
-
 func Login(c *fiber.Ctx) error {
 	var userInfo Identity
 	if err := c.BodyParser(&userInfo); err != nil {
@@ -40,7 +39,7 @@ func Login(c *fiber.Ctx) error {
 	}
 	//update last login
 	user.LastLoginId = uuid.New()
-	row, err := repo.UpdateUser(user) 
+	row, err := repo.UpdateUser(user)
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Please check connect"})
@@ -48,22 +47,22 @@ func Login(c *fiber.Ctx) error {
 	if row < 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Please check id"})
 	}
-	//init userpayload for jwt
-	userPayload := model.UserPayload{ID: user.ID, LastLoginId: user.LastLoginId}
 	// Create the Claims
-    claims := jwt.MapClaims{
-        "payload":  userPayload,
-        "exp":   time.Now().Add(time.Hour * 168).Unix(),
-    }
+	claims := jwt.MapClaims{
+		"user_id":       user.ID,
+		"last_login_id": user.LastLoginId,
+		"role":          user.Role,
+		"exp":           time.Now().Add(time.Hour * 168).Unix(),
+	}
 	// Create token
-    token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	// Generate encoded token and send it as response.
-    t, err := token.SignedString(app.Core.Server.RouterPrivateKey)
-    if err != nil {
+	t, err := token.SignedString(app.Core.Server.RouterPrivateKey)
+	if err != nil {
 		log.Fatal(err)
-        return c.SendStatus(fiber.StatusInternalServerError)
-    }
-	
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: user, Token: t})
 }
 
