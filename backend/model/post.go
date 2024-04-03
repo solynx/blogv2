@@ -13,8 +13,8 @@ type Post struct {
 	Content        string          `gorm:"type:text" json:"content"`
 	UserId         uuid.UUID       `gorm:"type:text" json:"user_id"`
 	CategoryId     uuid.UUID       `json:"category_id"`
-	User           User            `gorm:"foreignKey:UserId"`
-	Category       Category        `gorm:"foreignKey:CategoryId"`
+	User           User            `gorm:"foreignKey:UserId" json:"user"`
+	Category       Category        `gorm:"foreignKey:CategoryId" json:"category"`
 	Metadata       *datatypes.JSON `json:"metadata"`
 	SEOTitle       *string         `json:"seo_title"`
 	SEOKeyword     *string         `json:"seo_keyword"`

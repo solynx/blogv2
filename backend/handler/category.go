@@ -21,7 +21,7 @@ type CategoryUpdate struct {
 	Index *uint64   `json:"index"`
 }
 
-type InputDelete struct {
+type InputId struct {
 	Id uuid.UUID `json:"id"`
 }
 
@@ -43,7 +43,7 @@ func CreateCategory(c *fiber.Ctx) error {
 	}
 	row, err := repositories.CreateCategory(newCategory)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Failed"})
+		return c.Status(fiber.StatusOK).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Failed"})
 	}
 	return c.Status(fiber.StatusCreated).JSON(&config.Response{Code: 201, Status: true, Message: "Success", Row: row, Data: newCategory})
 }
@@ -62,6 +62,22 @@ func GetCategory(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "failed to get data"})
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data, Metadata: pagination})
+}
+
+func GetDetailCategory(c *fiber.Ctx) error {
+	_, ok := c.Locals("user").(model.User)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please login"})
+	}
+	var input InputId
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
+	category, err := repositories.GetDetailCategoryById(input.Id)
+	if err != nil {
+		return c.Status(fiber.StatusOK).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Failed to get data"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: category})
 }
 
 func UpdateCategory(c *fiber.Ctx) error {
@@ -84,7 +100,7 @@ func UpdateCategory(c *fiber.Ctx) error {
 	}
 	row, err := repositories.UpdateCategory(*category)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check data"})
+		return c.Status(fiber.StatusOK).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check data"})
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Row: row})
 }
@@ -94,7 +110,7 @@ func DeleteCategory(c *fiber.Ctx) error {
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please login"})
 	}
-	var input InputDelete
+	var input InputId
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
 	}

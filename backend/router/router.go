@@ -57,8 +57,10 @@ func setupRouter(app *fiber.App) {
 		ContextKey: "user_token",
 	}))
 	system.Post("/post.json", handler.CreatePost)
+	system.Get("/post.json", handler.GetPost)
 	//category rest api
 	system.Post("/category.json", handler.CreateCategory)
+	system.Post("/category/detail.json", handler.GetDetailCategory)
 	system.Get("/category.json", handler.GetCategory)
 	system.Patch("/category.json", handler.UpdateCategory)
 	system.Delete("/category.json", handler.DeleteCategory)

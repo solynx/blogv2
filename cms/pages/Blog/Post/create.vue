@@ -1,6 +1,7 @@
 <template>
   <div>
-    <NCard title="Write Post" hoverable>
+    <ClientOnly>
+      <NCard title="Write Post" hoverable>
       <n-space vertical class="mb-3">
         <n-grid :x-gap="12" :y-gap="12" :cols="4" layout-shift-disabled>
           <n-gi :span="2">
@@ -16,10 +17,10 @@
           <n-gi>
             <NFormItem label="Category">
               <n-select
-                v-model:value="selectedValue"
+                v-model:value="post.category_id"
                 filterable
                 placeholder="Chọn danh mục"
-                :options="options"
+                :options="categoryOptions"
               />
             </NFormItem>
           </n-gi>
@@ -37,14 +38,18 @@
       </NFormItem>
       <NButton type="info" @click="handlePostUpload">Upload</NButton>
     </NCard>
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useMessage } from "naive-ui";
-import type { PostUploadData } from "~/types/post.ts";
+import { useMessage, useLoadingBar } from "naive-ui";
+import  { type PostUploadData, POST_ENDPOINT} from "~/types/post";
+import {  CATEGORY_ENDPOINT, type CategoryOption } from "~/types/category";
+import { Method } from "~/types/requestMethod";
 const value = ref("");
 const message = useMessage();
+const loadingBar = useLoadingBar()
 const selectedValue = ref(null);
 const options = [
   {
@@ -101,7 +106,7 @@ const post = ref<PostUploadData>({
   title: "",
   description: "",
   content: "",
-  category: "",
+  category_id: "",
 });
 const editor = useEditor({
   content: post.value.content,
@@ -120,8 +125,39 @@ const editor = useEditor({
     post.value.content = value.editor.getHTML();
   },
 });
-const handlePostUpload = () => {
-  console.log(post.value);
-  message.success("Upload ok");
+
+const categoryOptions = ref<CategoryOption[]>([])
+const handleGetLi = async () => {
+  const listCategory = await useRestApi(Method.GET, CATEGORY_ENDPOINT, {});
+  if(listCategory.status) {
+    listCategory.data.forEach((item: object, index: number) => {
+    categoryOptions.value.push({
+      label: item.name,
+      value: item.id
+      });
+    });
+    return;
+  }
+  return message.error('Failed to get data')
+}
+const handlePostUpload = async () => {
+  loadingBar.start();
+  if(!post.value.category_id) {
+    return message.error("Vui lòng chọn danh mục")
+  }
+  const result = await useRestApi(Method.POST, POST_ENDPOINT, post.value)
+  if(result.status) {
+    loadingBar.finish();
+    post.value = {
+        title: "",
+        description: "",
+        content: "",
+        category_id: "",
+    }
+    return message.success("Thêm bài viết thành công!")
+  }
+  loadingBar.error();
+  return message.error("Lỗi thêm bài viết!")
 };
+handleGetLi();
 </script>

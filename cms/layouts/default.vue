@@ -1,5 +1,6 @@
 <template>
-  <NModalProvider>
+  <NLoadingBarProvider>
+    <NModalProvider>
     <NMessageProvider>
       <div class="relative h-screen">
         <n-layout position="absolute" has-sider>
@@ -55,6 +56,7 @@
       </div>
     </NMessageProvider>
   </NModalProvider>
+  </NLoadingBarProvider>
 </template>
 
 <script lang="ts" setup>

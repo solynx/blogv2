@@ -1,9 +1,11 @@
 <template>
-  <n-card title="Quản trị danh mục" hoverable>
-    <NRow gutter="12">
+  <n-card title="Quản trị" hoverable>
+    <ClientOnly>
+      <NRow gutter="12">
       <n-col :span="12">
         <n-form-item label="Thêm danh mục">
           <n-input
+            v-model:value="categoryName"
             show-count
             :maxlength="50"
             placeholder="Nhập tên danh mục..."
@@ -14,40 +16,102 @@
         </n-form-item>
       </n-col>
     </NRow>
-    <NFormItem label="Tất cả danh mục">
       <n-data-table
         :columns="columns"
-        :data="data"
+        :data="categoryTableData"
         :bordered="false"
         :pagination="pagination"
       />
-    </NFormItem>
+
+      <n-modal v-model:show="showDetailCategory" transform-origin="center">
+        <n-card
+          style="position: fixed; width: 60%; top: 30%; left: 20%"
+          title="Sửa danh mục"
+          :bordered="false"
+          size="huge"
+          role="dialog"
+          aria-modal="true"
+        >
+          <NGrid x-gap="12" :cols="2">
+            <NGi>
+              <NFormItem label="Tên danh mục">
+                <n-input type="text" placeholder="Waiting..." v-model:value="categoryDetail.name" />
+              </NFormItem>
+            </NGi>
+            <NGi>
+              <NFormItem label="Slug">
+                <n-input type="text" placeholder="Waiting..." v-model:value="categoryDetail.slug" disabled />
+              </NFormItem>
+            </NGi>
+            <NGi>
+              <NFormItem label="Vị trí">
+                  <n-input-number
+                  v-model:value="categoryDetail.index"
+                  placeholder="Waiting..."
+                  :min="1"
+                  :max="99"
+                  disable
+                />
+              </NFormItem>
+          
+            </NGi>
+            <NGi>
+              <NFormItem label="Người tạo">
+                <n-input type="text" placeholder="Waiting..." disabled v-model:value="categoryDetail.author"/>
+              </NFormItem>
+            </NGi>  
+          </NGrid>
+          <template #footer>
+            <NButton type="info" @click="handleUpdateCategory">Sửa</NButton>
+          </template>
+        </n-card>
+
+      </n-modal>
+      <n-modal
+    v-model:show="showDeleteConfirm"
+    :mask-closable="false"
+    preset="dialog"
+    title="Dialog"
+    content="Are you sure?"
+    positive-text="Confirm"
+    negative-text="Cancel"
+    @positive-click="onConfirmDeleteClick"
+  />
+    </ClientOnly>
   </n-card>
 </template>
 
 <script setup lang="ts">
-import { NButton, NIcon, useMessage } from "naive-ui";
-import type { DataTableColumns } from "naive-ui";
+import { NButton, NIcon, useMessage, NPopconfirm, useLoadingBar } from "naive-ui";
+import type { DataTableColumns, NInputGroup } from "naive-ui";
+import { type CategoryDetail, CATEGORY_ENDPOINT, CATEGORY_DETAIL_ENDPOINT, type CategoryDataTable } from "~/types/category";
+import { Method } from "~/types/requestMethod";
+import { formatDate } from "~/helpers/date";
 import {
   EyeSharp as EyeIcon,
   PencilSharp as PencilIcon,
   TrashOutline as TrashIcon,
 } from "@vicons/ionicons5";
-const message = useMessage();
-type Song = {
-  no: number;
-  title: string;
-  author: string;
-  createdAt: string;
-};
+
+const showDetailCategory = ref(false);
+const showDeleteConfirm = ref(false);
+const categoryName = ref<String>("");
 const pagination = {
-  pageSize: 10,
+  pageSize: 12,
 };
+const categoryTableData = ref<CategoryDataTable[]>([]);
+const message = useMessage();
+const loadingBar = useLoadingBar()
+const categoryDetail = ref<CategoryDetail>({id: "", name: "", slug: "", index: 1, author: ""});
 const createColumns = ({
-  play,
+  view,
+  edit,
+  remove,
 }: {
-  play: (row: Song) => void;
-}): DataTableColumns<Song> => {
+  view: (row: CategoryDataTable) => void;
+  edit: (row: CategoryDataTable) => void;
+  remove: (row: CategoryDataTable) => void;
+}): DataTableColumns<CategoryDataTable> => {
   return [
     {
       title: "No",
@@ -62,79 +126,111 @@ const createColumns = ({
       key: "author",
     },
     {
-      title: "Ngày đăng",
+      title: "Ngày tạo",
       key: "createdAt",
     },
     {
       title: "Action",
       key: "actions",
-      render(row) {
+      render(row: any) {
         return [
           h(
             NButton,
             {
               info: true,
-              color: "#2080F0",
+              type: "warning",
               size: "medium",
-              class: "mr-2",
-              title: "Detail",
-              onClick: () => play(row),
-            },
-            { default: () => h(NIcon, null, { default: () => h(EyeIcon) }) }
-          ),
-          h(
-            NButton,
-            {
-              info: true,
-              color: "#F0A020",
-              size: "medium",
-              class: "mx-2",
+              class: "mx-1",
               title: "Edit",
-              onClick: () => play(row),
+              onClick: () => edit(row),
             },
             { default: () => h(NIcon, null, { default: () => h(PencilIcon) }) }
           ),
-          h(
-            NButton,
-            {
-              info: true,
-              color: "#D03050",
-              class: "mx-2",
-              size: "medium",
-              title: "Delete",
-              onClick: () => play(row),
-            },
-            { default: () => h(NIcon, null, { default: () => h(TrashIcon) }) }
-          ),
+          h( 
+            NPopconfirm,      
+            { onPositiveClick: () => onConfirmDeleteClick(row.value), negativeText: 'Cancel', positiveText: 'Delete',},
+            { trigger: () => h(NButton, 
+                  {size: 'medium', type: "error"},
+                  { default: () => h(NIcon, null, { default: () => h(TrashIcon)}) },),
+                  default: () => h('span', {}, { default: () => 'Xác nhận xóa' }),},),
         ];
       },
     },
   ];
 };
 
-const data: Song[] = [
-  { no: 3, title: "Wonderwall", author: "John Doe", createdAt: "12/12/2024" },
-  {
-    no: 4,
-    title: "Don't Look Back in Anger",
-    author: "Artisan",
-    createdAt: "12/12/2024",
-  },
-  {
-    no: 12,
-    title: "Champagne Supernova",
-    author: "Mkdir",
-    createdAt: "12/12/2024",
-  },
-];
+
 const columns = createColumns({
-  play(row: Song) {
-    message.info(`Play ${row.title}`);
+  view(row: CategoryDataTable) {
+    handleGetDetailCategory(row.value)
+    showDetailCategory.value = !showDetailCategory.value;
+  },
+  edit(row: CategoryDataTable) {
+    handleGetDetailCategory(row.value)
+    showDetailCategory.value = !showDetailCategory.value;
+  },
+  remove(row: CategoryDataTable) {
+    showDeleteConfirm.value = !showDeleteConfirm.value
   },
 });
-const handleCreateCategory = () => {
-  message.success("Create category ok");
+
+const convertDataForTable = async () => {
+  const listCategory = await useRestApi(Method.GET, CATEGORY_ENDPOINT, {});
+  categoryTableData.value = [];
+  listCategory.data.forEach((item: object, index: number) => {
+    categoryTableData.value.push({
+      no: index + 1,
+      title: item?.name,
+      author: item.user?.full_name ?? "",
+      createdAt: formatDate(item.create_at),
+      value: item.id
+    });
+  });
 };
+const handleGetDetailCategory = async (id : string) => {
+  let result = await useRestApi(Method.POST, CATEGORY_DETAIL_ENDPOINT, {id});
+  if (result.data) {
+    categoryDetail.value = {
+      id: id,
+      name: result.data.name,
+      slug: result.data.slug,
+      index: result.data.index,
+      author: result.data.user.full_name
+    }
+  }
+}
+const handleUpdateCategory = async () => {
+  loadingBar.start();
+  let result = await useRestApi(Method.PATCH, CATEGORY_ENDPOINT, categoryDetail.value);
+  showDetailCategory.value = !showDetailCategory.value
+  if(result.status) {
+    loadingBar.finish();
+    message.success("Cập nhật thành công!", {duration: 1000});
+    return convertDataForTable();
+  }
+  else{
+    loadingBar.error();
+    return message.error("Thêm thất bại")
+  }
+}
+const onConfirmDeleteClick = async (id : string) => {
+  let result = await useRestApi(Method.DELETE, CATEGORY_ENDPOINT, {id});
+  if (result.status) {
+    message.success("Xóa thành công!", {duration: 1000});
+    return convertDataForTable();
+  }
+  return message.error("Xóa thất bại")
+}
+const handleCreateCategory = async () => {
+  let result = await useRestApi(Method.POST, CATEGORY_ENDPOINT, {name: categoryName.value});
+  categoryName.value = "";
+  if (result.status) {
+    message.success("Thêm thành công!", {duration: 1000});
+    return convertDataForTable();
+  }
+  return message.error("Xóa thất bại")
+}
+convertDataForTable();
 </script>
 
 <style lang="scss" scoped></style>
