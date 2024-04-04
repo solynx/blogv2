@@ -51,7 +51,7 @@ func CreatePost(c *fiber.Ctx) error {
 	return c.JSON(&config.Response{Code: 200, Message: "Create success!", Status: true, Row: row})
 }
 
-func GetPost(c *fiber.Ctx) error {
+func GetListPost(c *fiber.Ctx) error {
 	_, ok := c.Locals("user").(model.User)
 	if !ok {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please login"})
@@ -128,4 +128,33 @@ func GetPostDetail(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check your arg"})
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: post})
+}
+
+//PUBLIC API FOR UI
+
+func GetPostDetailBySlug(c *fiber.Ctx) error {
+	query := new(config.UIQuery)
+	if err := c.QueryParser(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
+	if query.Slug == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
+	post, err := repositories.GetPostBySlug(query.Slug)
+	if err != nil {
+		return c.Status(fiber.StatusOK).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Can't find data"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: post})
+}
+
+func PublicGetListPost(c *fiber.Ctx) error {
+	var uiQuery config.UIQuery
+	if err := c.QueryParser(&uiQuery); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
+	data, pagination, err := repositories.GetListPostForUI(uiQuery)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Can't get data"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data, Metadata: pagination})
 }

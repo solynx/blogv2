@@ -52,3 +52,32 @@ func DeletePost(id uuid.UUID) (int64, error) {
 	result := app.Core.Database.DB.Where("id = ?", id).Delete(&model.Post{})
 	return result.RowsAffected, result.Error
 }
+
+func GetPostBySlug(slug string) (model.Post, error) {
+	var post model.Post
+	tx := app.Core.Database.DB.Where("`slug` = ? AND `published` = ? ", slug, true).Omit("updated_at")
+	tx = tx.Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `full_name`")
+	})
+	tx = tx.Preload("Category", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `name`")
+	})
+	tx.First(&post)
+	return post, tx.Error
+}
+
+func GetListPostForUI(query config.UIQuery) ([]*model.Post, config.Pagination, error) {
+	var posts []*model.Post
+	var pagination config.Pagination
+	tx := app.Core.Database.DB.Model(&model.Post{})
+	tx = tx.Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `full_name`")
+	})
+	tx = tx.Preload("Category", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `name`")
+	})
+	tx.Where("`published` = ?", true).Offset(query.GetOffset()).Limit(query.Limit).Order("`updated_at` DESC").Select("id, title, user_id, category_id, created_at").Find(&posts)
+	tx.Count(&pagination.Total)
+	pagination.Page = query.GetPage()
+	return posts, pagination, tx.Error
+}

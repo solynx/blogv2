@@ -43,6 +43,7 @@ func setupRouter(app *fiber.App) {
 
 	//manager for CMS admin calling
 	system := v1.Group("/system")
+	public := v1.Group("/public")
 	// system.Get("/login.json", handler.Login)
 	// system.Post("/post.json", handler.CreatePost)
 	system.Use(jwtware.New(jwtware.Config{
@@ -57,7 +58,7 @@ func setupRouter(app *fiber.App) {
 		ContextKey: "user_token",
 	}))
 	system.Post("/post.json", handler.CreatePost)
-	system.Get("/post.json", handler.GetPost)
+	system.Get("/post.json", handler.GetListPost)
 	system.Patch("/post.json", handler.UpdatePost)
 	system.Delete("/post.json", handler.DeletePost)
 	system.Get("/post/detail.json", handler.GetPostDetail)
@@ -67,6 +68,12 @@ func setupRouter(app *fiber.App) {
 	system.Get("/category.json", handler.GetCategory)
 	system.Patch("/category.json", handler.UpdateCategory)
 	system.Delete("/category.json", handler.DeleteCategory)
+
+	/*
+	API FOR UI
+	*/
+	public.Get("/post.json", handler.GetPostDetailBySlug)
+	public.Post("/posts.json", handler.PublicGetListPost)
 }
 
 func validateAccountApiKey(c *fiber.Ctx, key string) (bool, error) {
