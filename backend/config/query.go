@@ -1,11 +1,14 @@
 package config
 
+import "github.com/google/uuid"
+
 type Query struct {
-	Limit  int    `json:"limit"`
-	Page   int    `json:"page"`
-	Offset int    `json:"offset"`
-	Sort   string `json:"sort"`
-	Title  string `json:"title"`
+	Limit  int       `json:"limit"`
+	Page   int       `json:"page"`
+	Offset int       `json:"offset"`
+	Sort   string    `json:"sort"`
+	Title  string    `json:"title"`
+	Id     uuid.UUID `json:"id"`
 }
 
 func (q *Query) GetLimit() int {

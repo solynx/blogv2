@@ -58,6 +58,9 @@ func setupRouter(app *fiber.App) {
 	}))
 	system.Post("/post.json", handler.CreatePost)
 	system.Get("/post.json", handler.GetPost)
+	system.Patch("/post.json", handler.UpdatePost)
+	system.Delete("/post.json", handler.DeletePost)
+	system.Get("/post/detail.json", handler.GetPostDetail)
 	//category rest api
 	system.Post("/category.json", handler.CreateCategory)
 	system.Post("/category/detail.json", handler.GetDetailCategory)

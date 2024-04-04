@@ -1,50 +1,50 @@
 <template>
   <ClientOnly>
     <div>
-      <div v-if="props.editor">
+      <div v-if="editor">
         <button
-          @click="props.editor.chain().focus().toggleBold().run()"
+          @click="editor.chain().focus().toggleBold().run()"
           :disabled="!editor.can().chain().focus().toggleBold().run()"
           :class="{ 'is-active': editor.isActive('bold') }"
         >
           bold
         </button>
         <button
-          @click="props.editor.chain().focus().toggleItalic().run()"
+          @click="editor.chain().focus().toggleItalic().run()"
           :disabled="!editor.can().chain().focus().toggleItalic().run()"
           :class="{ 'is-active': editor.isActive('italic') }"
         >
           italic
         </button>
         <button
-          @click="props.editor.chain().focus().toggleStrike().run()"
+          @click="editor.chain().focus().toggleStrike().run()"
           :disabled="!editor.can().chain().focus().toggleStrike().run()"
           :class="{ 'is-active': editor.isActive('strike') }"
         >
           strike
         </button>
         <button
-          @click="props.editor.chain().focus().toggleCode().run()"
+          @click="editor.chain().focus().toggleCode().run()"
           :disabled="!editor.can().chain().focus().toggleCode().run()"
           :class="{ 'is-active': editor.isActive('code') }"
         >
           code
         </button>
-        <button @click="props.editor.chain().focus().unsetAllMarks().run()">
+        <button @click="editor.chain().focus().unsetAllMarks().run()">
           clear marks
         </button>
-        <button @click="props.editor.chain().focus().clearNodes().run()">
+        <button @click="editor.chain().focus().clearNodes().run()">
           clear nodes
         </button>
         <button
-          @click="props.editor.chain().focus().setParagraph().run()"
+          @click="editor.chain().focus().setParagraph().run()"
           :class="{ 'is-active': editor.isActive('paragraph') }"
         >
           paragraph
         </button>
         <button
           @click="
-            props.editor.chain().focus().toggleHeading({ level: 1 }).run()
+           editor.chain().focus().toggleHeading({ level: 1 }).run()
           "
           :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }"
         >
@@ -52,7 +52,7 @@
         </button>
         <button
           @click="
-            props.editor.chain().focus().toggleHeading({ level: 2 }).run()
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
           "
           :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
         >
@@ -60,7 +60,7 @@
         </button>
         <button
           @click="
-            props.editor.chain().focus().toggleHeading({ level: 3 }).run()
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
           "
           :class="{ 'is-active': editor.isActive('heading', { level: 3 }) }"
         >
@@ -68,7 +68,7 @@
         </button>
         <button
           @click="
-            props.editor.chain().focus().toggleHeading({ level: 4 }).run()
+           editor.chain().focus().toggleHeading({ level: 4 }).run()
           "
           :class="{ 'is-active': editor.isActive('heading', { level: 4 }) }"
         >
@@ -76,7 +76,7 @@
         </button>
         <button
           @click="
-            props.editor.chain().focus().toggleHeading({ level: 5 }).run()
+            editor.chain().focus().toggleHeading({ level: 5 }).run()
           "
           :class="{ 'is-active': editor.isActive('heading', { level: 5 }) }"
         >
@@ -84,81 +84,125 @@
         </button>
         <button
           @click="
-            props.editor.chain().focus().toggleHeading({ level: 6 }).run()
+            editor.chain().focus().toggleHeading({ level: 6 }).run()
           "
           :class="{ 'is-active': editor.isActive('heading', { level: 6 }) }"
         >
           h6
         </button>
         <button
-          @click="props.editor.chain().focus().toggleBulletList().run()"
+          @click="editor.chain().focus().toggleBulletList().run()"
           :class="{ 'is-active': editor.isActive('bulletList') }"
         >
           bullet list
         </button>
         <button
-          @click="props.editor.chain().focus().toggleOrderedList().run()"
+          @click="editor.chain().focus().toggleOrderedList().run()"
           :class="{ 'is-active': editor.isActive('orderedList') }"
         >
           ordered list
         </button>
         <button
-          @click="props.editor.chain().focus().toggleCodeBlock().run()"
+          @click="editor.chain().focus().toggleCodeBlock().run()"
           :class="{ 'is-active': editor.isActive('codeBlock') }"
         >
           code block
         </button>
         <button
-          @click="props.editor.chain().focus().toggleBlockquote().run()"
+          @click="editor.chain().focus().toggleBlockquote().run()"
           :class="{ 'is-active': editor.isActive('blockquote') }"
         >
           blockquote
         </button>
-        <button @click="props.editor.chain().focus().setHorizontalRule().run()">
+        <button @click="editor.chain().focus().setHorizontalRule().run()">
           horizontal rule
         </button>
-        <button @click="props.editor.chain().focus().setHardBreak().run()">
+        <button @click="editor.chain().focus().setHardBreak().run()">
           hard break
         </button>
         <button
-          @click="props.editor.chain().focus().undo().run()"
+          @click="editor.chain().focus().undo().run()"
           :disabled="!editor.can().chain().focus().undo().run()"
         >
           undo
         </button>
         <button
-          @click="props.editor.chain().focus().redo().run()"
+          @click="editor.chain().focus().redo().run()"
           :disabled="!editor.can().chain().focus().redo().run()"
         >
           redo
         </button>
+        <button @click="editor.chain().focus().setTextAlign('left').run()" :class="{ 'is-active': editor.isActive({ textAlign: 'left' }) }">
+        left
+        </button>
+        <button @click="editor.chain().focus().setTextAlign('center').run()" :class="{ 'is-active': editor.isActive({ textAlign: 'center' }) }">
+          center
+        </button>
+        <button @click="editor.chain().focus().setTextAlign('right').run()" :class="{ 'is-active': editor.isActive({ textAlign: 'right' }) }">
+          right
+        </button>
+        <button @click="editor.chain().focus().setTextAlign('justify').run()" :class="{ 'is-active': editor.isActive({ textAlign: 'justify' }) }">
+          justify
+        </button>
+        <button @click="editor.chain().focus().unsetTextAlign().run()">
+          unsetTextAlign
+        </button>
+        <button @click="addImage">
+          setImage
+        </button>
+        <button id="add" @click="addVideo">
+        Add YouTube video
+      </button>
       </div>
       <TiptapEditorContent
         class="mt-3"
-        v-model="props.content"
-        :editor="props.editor"
+        :editor="editor"
       />
     </div>
   </ClientOnly>
 </template>
 
-<script setup>
-const props = defineProps(["editor"]);
-
-onMounted(() => {
-  if (!!unref(props.editor)) {
-    unref(props.editor).commands.setContent(props.content);
+<script setup lang="ts">
+const props = defineProps({
+  editor : {
+    type: Object,
+    required:true
   }
 });
 
-onBeforeUnmount(() => {
-  unref(props.editor).destroy();
-});
+
+const editor = ref(props.editor)
+
+const addImage = () => {
+  const url = window.prompt('URL')
+  if (url) {
+    editor.value.chain().focus().setImage({ src: url }).run()
+  }
+}
+
+const addVideo = () => {
+  const url = prompt('Enter YouTube URL')
+
+  editor.value.commands.setYoutubeVideo({
+    src: url,
+    width:640,
+    height:  480,
+  })
+}
+// onMounted(() => {
+//   if (!!unref(editor)) {
+//     unref(editor).commands.setContent(props.data);
+//   }
+// });
+
+// onBeforeUnmount(() => {
+//   unref(editor).destroy();
+// });
 </script>
 <style scoped>
 button {
   padding: 3px;
-  margin: 0 5px;
+  margin: 5px 5px;
   border: 1px solid;
 }
 </style>

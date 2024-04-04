@@ -15,7 +15,7 @@ type PostSchema struct {
 	Description    string    `json:"description"`
 	Content        string    `gorm:"type:text" json:"content"`
 	SEOTitle       *string   `json:"seo_title"`
-	SEOKeyword     *string   `json:"seo_keyword"`
+	SEOKeywords    *string   `json:"seo_keywords"`
 	SEODescription *string   `json:"seo_description"`
 	CategoryId     uuid.UUID `json:"category_id"`
 }
@@ -26,13 +26,10 @@ type PostUpdateInput struct {
 	Description    string    `json:"description"`
 	Content        string    `gorm:"type:text" json:"content"`
 	SEOTitle       *string   `json:"seo_title"`
-	SEOKeyword     *string   `json:"seo_keyword"`
+	SEOKeywords    *string   `json:"seo_keywords"`
 	SEODescription *string   `json:"seo_description"`
 	CategoryId     uuid.UUID `json:"category_id"`
-}
-
-type IdInput struct {
-	Id uuid.UUID `json:"id"`
+	Published      bool      `json:"published"`
 }
 
 func CreatePost(c *fiber.Ctx) error {
@@ -44,7 +41,7 @@ func CreatePost(c *fiber.Ctx) error {
 	if err := c.BodyParser(&args); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request", Error: "Please check args sended"})
 	}
-	newPost := &model.Post{Title: args.Title, UserId: user.ID, CategoryId: args.CategoryId, Description: args.Description, Content: args.Content, SEOTitle: args.SEOTitle, SEOKeyword: args.SEOKeyword, SEODescription: args.SEODescription}
+	newPost := &model.Post{Title: args.Title, UserId: user.ID, CategoryId: args.CategoryId, Description: args.Description, Content: args.Content, SEOTitle: args.SEOTitle, SEOKeywords: args.SEOKeywords, SEODescription: args.SEODescription}
 	newPost.ID = uuid.New()
 	newPost.Slug = helpers.GetSlug(newPost.Title, newPost.ID)
 	row, err := repositories.CreatePost(newPost)
@@ -89,13 +86,16 @@ func UpdatePost(c *fiber.Ctx) error {
 	post.Description = input.Description
 	post.Content = input.Content
 	post.SEODescription = input.SEODescription
-	post.SEOKeyword = input.SEOKeyword
+	post.SEOKeywords = input.SEOKeywords
 	post.SEOTitle = input.SEOTitle
-	row, err := repositories.UpdatePost(*post)
+	post.Published = &input.Published
+	post.Category = nil
+	post.User = nil
+	row, err := repositories.UpdatePost(&post)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request", Error: "Failed to update"})
 	}
-	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Row: row})
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Row: row, Data: post})
 }
 
 func DeletePost(c *fiber.Ctx) error {
@@ -112,4 +112,20 @@ func DeletePost(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request", Error: "Failed to delete"})
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Row: row})
+}
+
+func GetPostDetail(c *fiber.Ctx) error {
+	_, ok := c.Locals("user").(model.User)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please login"})
+	}
+	query := new(config.Query)
+	if err := c.QueryParser(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
+	post, err := repositories.GetPostById(query.Id)
+	if err != nil {
+		return c.Status(fiber.StatusOK).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check your arg"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: post})
 }

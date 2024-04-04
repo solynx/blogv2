@@ -8,68 +8,138 @@
         :pagination="pagination"
       />
 
-      <n-modal v-model:show="showDetailCategory" transform-origin="center">
+      <n-modal v-model:show="showDetailPost" transform-origin="center">
         <n-card
-          style="position: fixed; width: 60%; top: 30%; left: 20%"
+          style="position: fixed; width: 80%; top: 10%; left: 10%"
           title="Sửa danh mục"
           :bordered="false"
           size="huge"
           role="dialog"
           aria-modal="true"
         >
-          <NGrid x-gap="12" :cols="2">
-            <NGi>
-              <NFormItem label="Tên danh mục">
-                <n-input type="text" placeholder="Waiting..." v-model:value="PostDataDetail.name" />
+          <NGrid x-gap="12" :cols="4">
+            <NGi span="2">
+              <NFormItem label="Tiêu đề bài viết">
+                <n-input
+                  type="text"
+                  placeholder="Waiting..."
+                  v-model:value="postDataDetail.title"
+                />
               </NFormItem>
             </NGi>
             <NGi>
               <NFormItem label="Slug">
-                <n-input type="text" placeholder="Waiting..." v-model:value="PostDataDetail.slug" disabled />
-              </NFormItem>
-            </NGi>
-            <NGi>
-              <NFormItem label="Vị trí">
-                  <n-input-number
-                  v-model:value="PostDataDetail.index"
+                <n-input
+                  type="text"
                   placeholder="Waiting..."
-                  :min="1"
-                  :max="99"
-                  disable
+                  v-model:value="postDataDetail.slug"
+                  disabled
                 />
               </NFormItem>
-          
             </NGi>
             <NGi>
               <NFormItem label="Người tạo">
-                <n-input type="text" placeholder="Waiting..." disabled v-model:value="PostDataDetail.author"/>
+                <n-input
+                  type="text"
+                  placeholder="Waiting..."
+                  disabled
+                  v-model:value="postDataDetail.author"
+                />
               </NFormItem>
-            </NGi>  
+            </NGi>
+            <NGi span="2">
+              <NFormItem label="Mô tả ngắn">
+                <n-input
+                  type="text"
+                  placeholder="Waiting..."
+                  v-model:value="postDataDetail.description"
+                />
+              </NFormItem>
+            </NGi>
+            <NGi>
+              <NFormItem label="Danh mục">
+                <n-select
+                  v-model:value="postDataDetail.category_id"
+                  filterable
+                  placeholder="Chọn danh mục"
+                  :options="categoryOptions"
+                />
+              </NFormItem>
+            </NGi>
+            <NGi>
+              <NFormItem label="Trạng thái">
+                <n-switch v-model:value="postDataDetail.published" />
+              </NFormItem>
+            </NGi>
+            <NGi span="4">
+              <NFormItem label="Content">
+              <TiptapEditor :editor="editor" class="w-full" />
+            </NFormItem>
+            </NGi>
+            <NGi span="2">
+              <NFormItem label="Tiêu đề SEO">
+                <n-input
+                  type="text"
+                  placeholder="Nhập tiêu đề..."
+                  v-model:value="postDataDetail.seo_title"
+                />
+              </NFormItem>
+            </NGi>
+            <NGi span="2">
+              <NFormItem label="Từ khóa SEO">
+                <n-input
+                  type="text"
+                  placeholder="Nhập từ khóa..."
+                  v-model:value="postDataDetail.seo_keywords"
+                />
+              </NFormItem>
+            </NGi>
+            <NGi span="4">
+              <NFormItem label="Mô tả SEO">
+                <n-input
+                  type="textarea"
+                  placeholder="Nhập mô tả..."
+                  v-model:value="postDataDetail.seo_description"
+                />
+              </NFormItem>
+            </NGi>
+
           </NGrid>
           <template #footer>
-            <NButton type="info" @click="handleUpdateCategory">Sửa</NButton>
+              <NButton type="info" @click="handleUpdatePost">Lưu thông tin</NButton>
           </template>
         </n-card>
-
       </n-modal>
       <n-modal
-    v-model:show="showDeleteConfirm"
-    :mask-closable="false"
-    preset="dialog"
-    title="Dialog"
-    content="Are you sure?"
-    positive-text="Confirm"
-    negative-text="Cancel"
-    @positive-click="onConfirmDeleteClick"
-  />
+        v-model:show="showDeleteConfirm"
+        :mask-closable="false"
+        preset="dialog"
+        title="Dialog"
+        content="Are you sure?"
+        positive-text="Confirm"
+        negative-text="Cancel"
+        @positive-click="onConfirmDeleteClick"
+      />
     </ClientOnly>
   </n-card>
 </template>
 
 <script setup lang="ts">
-import { NButton, NIcon, useMessage, NPopconfirm, useLoadingBar } from "naive-ui";
+import {
+  NButton,
+  NIcon,
+  useMessage,
+  NPopconfirm,
+  useLoadingBar,
+} from "naive-ui";
 import type { DataTableColumns, NInputGroup } from "naive-ui";
-import { POST_ENDPOINT, type PostDataTable, type PostDataDetail } from "~/types/post";
+import {
+  POST_DETAIL_ENDPOINT,
+  POST_ENDPOINT,
+  type PostDataTable,
+  type PostDataDetail,
+} from "~/types/post";
+import { type CategoryOption, CATEGORY_ENDPOINT } from "~/types/category";
 import { Method } from "~/types/requestMethod";
 import { formatDate } from "~/helpers/date";
 import {
@@ -78,15 +148,29 @@ import {
   TrashOutline as TrashIcon,
 } from "@vicons/ionicons5";
 
-const showDetailCategory = ref(false);
+const showDetailPost = ref(false);
 const showDeleteConfirm = ref(false);
 const pagination = {
   pageSize: 12,
 };
 const postTableData = ref<PostDataTable[]>([]);
+const categoryOptions = ref<CategoryOption[]>([]);
 const message = useMessage();
-const loadingBar = useLoadingBar()
-const postDataDetail = ref<PostDataDetail>({id: "", name: "", slug: "", index: 1, author: ""});
+const loadingBar = useLoadingBar();
+
+const postDataDetail = ref<PostDataDetail>({
+  id: "",
+  title: "",
+  slug: "",
+  description: "",
+  content: "",
+  author: "",
+  category_id: null,
+  seo_title: null,
+  seo_keywords: null,
+  seo_description: null,
+  published: false
+});
 const createColumns = ({
   view,
   edit,
@@ -134,31 +218,62 @@ const createColumns = ({
             },
             { default: () => h(NIcon, null, { default: () => h(PencilIcon) }) }
           ),
-          h( 
-            NPopconfirm,      
-            { onPositiveClick: () => onConfirmDeleteClick(row.value), negativeText: 'Cancel', positiveText: 'Delete',},
-            { trigger: () => h(NButton, 
-                  {size: 'medium', type: "error"},
-                  { default: () => h(NIcon, null, { default: () => h(TrashIcon)}) },),
-                  default: () => h('span', {}, { default: () => 'Xác nhận xóa' }),},),
+          h(
+            NPopconfirm,
+            {
+              onPositiveClick: () => onConfirmDeleteClick(row.id),
+              negativeText: "Cancel",
+              positiveText: "Delete",
+            },
+            {
+              trigger: () =>
+                h(
+                  NButton,
+                  { size: "medium", type: "error" },
+                  {
+                    default: () =>
+                      h(NIcon, null, { default: () => h(TrashIcon) }),
+                  }
+                ),
+              default: () => h("span", {}, { default: () => "Xác nhận xóa" }),
+            }
+          ),
         ];
       },
     },
   ];
 };
 
-
 const columns = createColumns({
   view(row: PostDataTable) {
     // handleGetDetailCategory(row.value)
-    showDetailCategory.value = !showDetailCategory.value;
+    showDetailPost.value = !showDetailPost.value;
   },
   edit(row: PostDataTable) {
-    // handleGetDetailCategory(row.value)
-    showDetailCategory.value = !showDetailCategory.value;
+    handleGetDetailPost(row.id);
+    showDetailPost.value = !showDetailPost.value;
   },
   remove(row: PostDataTable) {
-    showDeleteConfirm.value = !showDeleteConfirm.value
+    showDeleteConfirm.value = !showDeleteConfirm.value;
+  },
+});
+
+const editor = useEditor({
+  content: postDataDetail.value.content,
+  extensions: [
+    TiptapStarterKit,
+    TiptapPlaceholder.configure({
+      placeholder: "Write something …",
+    }),
+
+  ],
+  editorProps: {
+    attributes: {
+      class: "border-[1px] border-solid border-inherit px-3",
+    },
+  },
+  onUpdate: (value) => {
+    postDataDetail.value.content = value.editor.getHTML();
   },
 });
 
@@ -166,54 +281,85 @@ const convertDataForTable = async () => {
   const listPost = await useRestApi(Method.GET, POST_ENDPOINT, {});
   postTableData.value = [];
   listPost.data.forEach((item: object, index: number) => {
-    console.log(item)
     postTableData.value.push({
       no: index + 1,
       title: item?.title,
       author: item.user?.full_name ?? "",
-      createdAt: formatDate(item.create_at),
+      createdAt: formatDate(item.created_at),
       id: item.id,
+      category_id: item.category.id,
       category: item.category.name,
-      seoTitle: item.seo_title,
-      seoDescription: item.seo_description
+      seo_title: item.seo_title,
+      seo_keywords: item.seo_keywords,
+      seo_description: item.seo_description,
+      published: item.published ?? false,
     });
   });
 };
-// const handleGetDetailCategory = async (id : string) => {
-//   let result = await useRestApi(Method.POST, CATEGORY_DETAIL_ENDPOINT, {id});
-//   if (result.data) {
-//     PostDataDetail.value = {
-//       id: id,
-//       name: result.data.name,
-//       slug: result.data.slug,
-//       index: result.data.index,
-//       author: result.data.user.full_name
-//     }
-//   }
-// }
-// const handleUpdateCategory = async () => {
-//   loadingBar.start();
-//   let result = await useRestApi(Method.PATCH, CATEGORY_ENDPOINT, PostDataDetail.value);
-//   showDetailCategory.value = !showDetailCategory.value
-//   if(result.status) {
-//     loadingBar.finish();
-//     message.success("Cập nhật thành công!", {duration: 1000});
-//     return convertDataForTable();
-//   }
-//   else{
-//     loadingBar.error();
-//     return message.error("Thêm thất bại")
-//   }
-// }
-// const onConfirmDeleteClick = async (id : string) => {
-//   let result = await useRestApi(Method.DELETE, CATEGORY_ENDPOINT, {id});
-//   if (result.status) {
-//     message.success("Xóa thành công!", {duration: 1000});
-//     return convertDataForTable();
-//   }
-//   return message.error("Xóa thất bại")
-// }
+const handleGetDetailPost = async (id: string) => {
+  let result = await useRestApi(
+    Method.GET,
+    POST_DETAIL_ENDPOINT + `?id=${id}`,
+    {}
+  );
+
+  if (result.status) {
+    let data = result.data;
+    postDataDetail.value = {
+      id: id,
+      title: data.title,
+      slug: data.slug,
+      description: data.description,
+      content: data.content,
+      author: data.user.full_name,
+      published: data.published ?? false,
+      seo_description: data.seo_description,
+      seo_title: data.seo_title,
+      seo_keywords: data.seo_keywords,
+      category_id: data.category.id,
+    };
+    editor.value.commands.setContent(postDataDetail.value.content)
+  }
+};
+
+const handleGetListCategory = async () => {
+  const listCategory = await useRestApi(Method.GET, CATEGORY_ENDPOINT, {});
+  if (listCategory.status) {
+    listCategory.data.forEach((item: object, index: number) => {
+      categoryOptions.value.push({
+        label: item.name,
+        value: item.id,
+      });
+    });
+    return;
+  }
+  return message.error("Failed to get data");
+};
+
+const handleUpdatePost = async () => {
+  loadingBar.start();
+  let result = await useRestApi(Method.PATCH, POST_ENDPOINT, postDataDetail.value);
+  showDetailPost.value = !showDetailPost.value
+  if(result.status) {
+    loadingBar.finish();
+    message.success("Cập nhật thành công!", {duration: 1000});
+    return convertDataForTable();
+  }
+  else{
+    loadingBar.error();
+    return message.error("Cập nhật không thành công!")
+  }
+}
+const onConfirmDeleteClick = async (id : string) => {
+  let result = await useRestApi(Method.DELETE, POST_ENDPOINT, {id});
+  if (result.status) {
+    message.success("Xóa thành công!", {duration: 1000});
+    return convertDataForTable();
+  }
+  return message.error("Xóa thất bại")
+}
 convertDataForTable();
+handleGetListCategory();
 </script>
 
 <style lang="scss" scoped></style>

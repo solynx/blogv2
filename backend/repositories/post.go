@@ -30,14 +30,21 @@ func GetListPost(query config.Query) ([]*model.Post, config.Pagination, error) {
 	return posts, pagination, tx.Error
 }
 
-func GetPostById(id uuid.UUID) (*model.Post, error) {
+func GetPostById(id uuid.UUID) (model.Post, error) {
 	var post model.Post
-	result := app.Core.Database.DB.Where("id = ?", id).Find(&post)
-	return &post, result.Error
+	tx := app.Core.Database.DB.Where("id = ?", id).Omit("updated_at")
+	tx = tx.Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `full_name`")
+	})
+	tx = tx.Preload("Category", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `name`")
+	})
+	tx.Find(&post)
+	return post, tx.Error
 }
 
-func UpdatePost(post model.Post) (int64, error) {
-	result := app.Core.Database.DB.Updates(&post)
+func UpdatePost(post *model.Post) (int64, error) {
+	result := app.Core.Database.DB.Debug().Updates(&post)
 	return result.RowsAffected, result.Error
 }
 

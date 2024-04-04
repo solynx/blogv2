@@ -98,7 +98,7 @@ func UpdateCategory(c *fiber.Ctx) error {
 	if input.Index != nil {
 		category.Index = *input.Index
 	}
-	row, err := repositories.UpdateCategory(*category)
+	row, err := repositories.UpdateCategory(category)
 	if err != nil {
 		return c.Status(fiber.StatusOK).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check data"})
 	}

@@ -28,10 +28,10 @@ func GetListCategory(query config.Query) ([]*model.Category, config.Pagination, 
 	return categories, pagination, tx.Error
 }
 
-func GetCategoryById(id uuid.UUID) (*model.Category, error) {
+func GetCategoryById(id uuid.UUID) (model.Category, error) {
 	var category model.Category
 	result := app.Core.Database.DB.First(&category, "id = ?", id)
-	return &category, result.Error
+	return category, result.Error
 }
 
 func UpdateCategory(category model.Category) (int64, error) {
