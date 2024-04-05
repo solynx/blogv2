@@ -53,3 +53,12 @@ func GetDetailCategoryById(id uuid.UUID) (*model.Category, error) {
 	result := tx.First(&category, "id = ?", id)
 	return &category, result.Error
 }
+
+func PublicGetListNewCategory() ([]*model.Category, error) {
+	var categories []*model.Category
+	tx := app.Core.Database.DB.Model(&model.Category{})
+
+	tx.Limit(6).Order("`created_at` DESC").Select("name, slug").Find(&categories)
+
+	return categories, tx.Error
+}

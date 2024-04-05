@@ -1,9 +1,14 @@
 package config
 
+import "github.com/google/uuid"
+
 type UIQuery struct {
-	Slug string
-	Page   int  
-	Limit int
+	Slug       string
+	Page       int
+	Limit      int
+	CategoryId *uuid.UUID `json:"category_id"`
+	UserId     *uuid.UUID `json:"user_id"`
+	RecordId   uuid.UUID  `json:"record_id"`
 }
 
 const UI_LIMIT_PAGE_SIZE = 8

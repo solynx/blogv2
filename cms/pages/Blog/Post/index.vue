@@ -257,7 +257,6 @@ const columns = createColumns({
     showDeleteConfirm.value = !showDeleteConfirm.value;
   },
 });
-
 const editor = useEditor({
   content: postDataDetail.value.content,
   extensions: [
@@ -265,15 +264,19 @@ const editor = useEditor({
     TiptapPlaceholder.configure({
       placeholder: "Write something …",
     }),
-
+    TiptapImage.configure({
+      inline: true,
+    }), 
+    TiptapTextAlign.configure({
+    types: ['heading', 'paragraph'],}),
+    TiptapYoutube.configure({
+          controls: false,
+        })
   ],
   editorProps: {
     attributes: {
-      class: "border-[1px] border-solid border-inherit px-3",
+      class: "border px-3 prose !max-w-screen-2xl prose-sm sm:prose-base  m-5 focus:outline-none",
     },
-  },
-  onUpdate: (value) => {
-    postDataDetail.value.content = value.editor.getHTML();
   },
 });
 
@@ -338,6 +341,7 @@ const handleGetListCategory = async () => {
 
 const handleUpdatePost = async () => {
   loadingBar.start();
+  postDataDetail.value.content = editor.value.getHTML();
   let result = await useRestApi(Method.PATCH, POST_ENDPOINT, postDataDetail.value);
   showDetailPost.value = !showDetailPost.value
   if(result.status) {

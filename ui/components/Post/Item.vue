@@ -1,41 +1,33 @@
 <template>
-    <div class="pt-3 cursor-pointer rounded overflow-hidden group">
+    <div class="mt-1 cursor-pointer rounded overflow-hidden group" v-for="item in props.data">
       <div>
         <span class="text-sm block text-gray-400 mb-3 flex justify-between">
-          <p class="rounded-full bg-slate-100 px-2 py-1">Category</p>
-          <p>10/6/2024</p>
+          <p class="rounded-full bg-slate-100 px-3 py-1">{{ item.category.name}}</p>
+          <p>{{ item.createdAt }}</p>
         </span>
         <NuxtLink
-          to="/post/slug" class="text-xl font-bold text-[#333] group-hover:text-blue-500 transition-all"
+          :to="'/post/' + item.slug" class="text-xl font-bold text-[#333] group-hover:text-blue-500 transition-all "
         >
-          Trends and Predictions
+          {{ item.title }}
         </NuxtLink>
-        <div class="mt-3">
+        <div class="mt-3" v-if="item.description">
           <p class="text-gray-400 text-sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-            accumsan, nunc et tempus blandit, metus mi consectetur felis turpis
-            vitae ligula.
+            {{ item.description }}
           </p>
         </div>
       </div>
-      <div class="flex flex-wrap items-center gap-3 mt-8">
-        <img
-          src="https://readymadeui.com/team-3.webp"
-          class="w-10 h-10 rounded-full"
-        />
-        <p class="text-xs text-gray-400">BY SIMON KONECKI</p>
+      <div class="flex flex-wrap items-center gap-3 mt-3 mb-3">
+        <p class="text-xs text-gray-400">@ {{ item.author.full_name }}</p>
       </div>
+      <hr />
     </div>
-    <hr />
+
   </template>
   
-  <script>
-  export default {
-    setup() {
-      return {};
-    },
-  };
-  </script>
+<script setup lang="ts">
+  const props = defineProps(["data"])
+
+</script>
   
   <style lang="scss" scoped></style>
   

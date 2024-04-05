@@ -76,8 +76,25 @@ func GetListPostForUI(query config.UIQuery) ([]*model.Post, config.Pagination, e
 	tx = tx.Preload("Category", func(db *gorm.DB) *gorm.DB {
 		return db.Select("`id`, `name`")
 	})
-	tx.Where("`published` = ?", true).Offset(query.GetOffset()).Limit(query.Limit).Order("`updated_at` DESC").Select("id, title, user_id, category_id, created_at").Find(&posts)
+	tx.Where("`published` = ?", true).Offset(query.GetOffset()).Limit(query.Limit).Order("`created_at` DESC").Select("id, title, description, user_id, slug, category_id, created_at").Find(&posts)
 	tx.Count(&pagination.Total)
 	pagination.Page = query.GetPage()
 	return posts, pagination, tx.Error
+}
+
+func GetListRelatedPost(query config.UIQuery) ([]*model.Post, error) {
+	var posts []*model.Post
+	tx := app.Core.Database.DB.Model(&model.Post{})
+	tx = tx.Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `full_name`")
+	})
+	tx = tx.Preload("Category", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `name`")
+	})
+	tx = tx.Where("`published` = ? AND `slug` != ?", true, query.Slug)
+	if query.UserId != nil || query.CategoryId != nil {
+		tx = tx.Where("`user_id` = ? OR `category_id` = ?", query.UserId, query.CategoryId)
+	}
+	tx.Limit(4).Order("`created_at` DESC").Select("id, title, slug, user_id, category_id, created_at").Find(&posts)
+	return posts, tx.Error
 }

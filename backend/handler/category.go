@@ -123,3 +123,11 @@ func DeleteCategory(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Row: row})
 }
+
+func PublicGetListNewCategory(c *fiber.Ctx) error {
+	data, err := repositories.PublicGetListNewCategory()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Can't get data"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data})
+}

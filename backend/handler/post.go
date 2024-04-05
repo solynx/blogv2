@@ -149,7 +149,7 @@ func GetPostDetailBySlug(c *fiber.Ctx) error {
 
 func PublicGetListPost(c *fiber.Ctx) error {
 	var uiQuery config.UIQuery
-	if err := c.QueryParser(&uiQuery); err != nil {
+	if err := c.BodyParser(&uiQuery); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
 	}
 	data, pagination, err := repositories.GetListPostForUI(uiQuery)
@@ -157,4 +157,17 @@ func PublicGetListPost(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Can't get data"})
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data, Metadata: pagination})
+}
+
+func PublicGetRelatedPosts(c *fiber.Ctx) error {
+	//lay cac bai viet lien quan den author hoac category
+	var uiQuery config.UIQuery
+	if err := c.BodyParser(&uiQuery); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
+	data, err := repositories.GetListRelatedPost(uiQuery)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Can't get data"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data})
 }

@@ -70,10 +70,14 @@ func setupRouter(app *fiber.App) {
 	system.Delete("/category.json", handler.DeleteCategory)
 
 	/*
-	API FOR UI
+		API FOR UI
 	*/
 	public.Get("/post.json", handler.GetPostDetailBySlug)
+	public.Post("/related-post.json", handler.PublicGetRelatedPosts)
 	public.Post("/posts.json", handler.PublicGetListPost)
+
+	//category
+	public.Get("/new-categories.json", handler.PublicGetListNewCategory)
 }
 
 func validateAccountApiKey(c *fiber.Ctx, key string) (bool, error) {

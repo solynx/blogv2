@@ -16,5 +16,7 @@ module.exports = {
       'segoe': ['Segoe Ui Light', 'ui-sans-serif', 'system-ui'],
     }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };

@@ -1,29 +1,24 @@
 <template>
-    <div class="pt-3 cursor-pointer rounded overflow-hidden group">
-      <div>
-        <span class="text-sm block text-gray-400 mb-3 flex justify-between">
-          <p>10/6/2024</p>
+  
+    <div class="pt-3 cursor-pointer rounded overflow-hidden group" v-for="item in props.data" >
+        <span class="text-sm block text-gray-400 mb-3 flex justify-between" >
+          <p>{{ useFormatDate(item.created_at) }}</p>
         </span>
         <NuxtLink
           to="/post/slug" class="text-xl text-[#333] group-hover:text-blue-500 transition-all"
         >
-          Trends and Predictions
+          {{ item.title }}
         </NuxtLink>
-      </div>
       <div class="flex flex-wrap items-center gap-3 mt-3">
-  
-        <p class="text-xs text-gray-400">BY SIMON KONECKI</p>
+        <p class="text-xs text-gray-400">BY {{ item.user.full_name }}</p>
       </div>
     </div>
-  </template>
+   
+</template>
   
-  <script>
-  export default {
-    setup() {
-      return {};
-    },
-  };
-  </script>
+<script setup lang="ts">
+const props = defineProps(["data"])
+</script>
   
-  <style lang="scss" scoped></style>
+<style scoped></style>
   
