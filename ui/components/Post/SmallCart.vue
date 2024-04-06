@@ -8,7 +8,7 @@
     </span>
     <NuxtLink
       :to="'/post/' + item.slug"
-      class="text-xl text-[#333] group-hover:text-blue-500 transition-all"
+      class="text-md group-hover:text-blue-500 transition-all"
     >
       {{ item.title }}
     </NuxtLink>

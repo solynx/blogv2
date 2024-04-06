@@ -76,8 +76,9 @@ func GetListPostForUI(query config.UIQuery) ([]*model.Post, config.Pagination, e
 	tx = tx.Preload("Category", func(db *gorm.DB) *gorm.DB {
 		return db.Select("`id`, `name`")
 	})
-	tx.Where("`published` = ?", true).Offset(query.GetOffset()).Limit(query.Limit).Order("`created_at` DESC").Select("id, title, description, user_id, slug, category_id, created_at").Find(&posts)
+	tx.Where("`published` = ?", true)
 	tx.Count(&pagination.Total)
+	tx.Offset(query.GetOffset()).Limit(query.Limit).Order("`created_at` DESC").Select("id, title, description, user_id, slug, category_id, created_at").Find(&posts)
 	pagination.Page = query.GetPage()
 	return posts, pagination, tx.Error
 }

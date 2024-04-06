@@ -8,6 +8,7 @@ interface PostOverview {
 }
 
 interface PostDetail {
+  id: string | null,
   title: string;
   content: string | null;
   category: object | null;
@@ -15,5 +16,5 @@ interface PostDetail {
   createdAt: string | null;
 }
 
-export const POST_PAGE_LIMIT = 2;
+export const POST_PAGE_LIMIT = 6;
 export type { PostOverview };

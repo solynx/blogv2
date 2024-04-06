@@ -1,5 +1,5 @@
 <template>
-  <div>
+    <div>
     <ul class="flex md:space-x-4 justify-center">
       <li
         class="flex items-center justify-center shrink-0 hover:bg-gray-50 cursor-pointer w-10 h-10 rounded-lg"
@@ -7,10 +7,11 @@
       >
         <NuxtLink
           :to="
-            paginationListButton.length > 1
+            currentPage > 1
               ? (path || '') + '?page=' + paginationListButton[0]
               : null
           "
+          @click = "handleLoadData(currentPage > 1 ? paginationListButton[0] : null)"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -29,8 +30,9 @@
         class="flex items-center justify-center shrink-0 cursor-pointer text-base font-bold w-10 h-10 rounded-lg"
         v-for="page in paginationListButton"
         :class="page == currentPage ? 'bg-blue-500 text-white' : null"
+        @click="handleLoadData(page)"
       >
-        <NuxtLink :to="(path || '') + '?page=' + page">
+        <NuxtLink :to="parseInt(page) && page !=  currentPage ? path + '?page=' + page : null">
           {{ page }}
         </NuxtLink>
       </li>
@@ -41,12 +43,13 @@
       >
         <NuxtLink
           :to="
-            paginationListButton.length > 1
+            paginationListButton.length > 1 && currentPage != totalPages
               ? (path || '') +
                 '?page=' +
-                paginationListButton[paginationListButton.length - 1]
+                (currentPage + 1)
               : null
           "
+           @click = "handleLoadData(paginationListButton.length > 1 && currentPage != totalPages ? currentPage + 1 : null)"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -66,25 +69,37 @@
 
 <script setup lang="ts">
 const props = defineProps(["data"]);
-const currentPage = props.data.page;
+const emit = defineEmits(['handlePaginate'])
+const currentPage = ref(props.data.page);
 const path = props.data.path;
-const totalPages = await Math.ceil(props.data.total / props.data.limit);
+const totalPages = Math.ceil(props.data.total / props.data.limit);
 const paginationListButton = ref([]);
 
 async function createPaginationListButton() {
-  if (currentPage <= totalPages) {
-    if (currentPage > 1) {
-      paginationListButton.value.push(currentPage - 1);
+  let page = currentPage.value
+  paginationListButton.value = []
+  if (page  <= totalPages) {
+    if (page  > 1) {
+      paginationListButton.value.push(page  - 1);
     }
-    for (let i = currentPage; i <= totalPages; i++) {
-      if (i > currentPage + 3 && i < totalPages) {
+    for (let i = page; i <= totalPages; i++) {
+      if (i > page  + 2 && i < totalPages) {
         paginationListButton.value.push("...");
-        paginationListButton.value.push(i);
+        paginationListButton.value.push(totalPages);
         break;
       }
       paginationListButton.value.push(i);
     }
   }
+}
+const handleLoadData =async (page: string) => {
+  let pageChoosed = parseInt(page)
+  if(!pageChoosed) {
+    return
+  }
+  currentPage.value = pageChoosed
+  emit('handlePaginate', currentPage.value)
+  await  createPaginationListButton()
 }
 await createPaginationListButton();
 </script>

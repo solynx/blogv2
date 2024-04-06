@@ -78,6 +78,9 @@ func setupRouter(app *fiber.App) {
 
 	//category
 	public.Get("/new-categories.json", handler.PublicGetListNewCategory)
+
+	//contribute
+	public.Post("/contribute.json", handler.CreateContributeMessage)
 }
 
 func validateAccountApiKey(c *fiber.Ctx, key string) (bool, error) {

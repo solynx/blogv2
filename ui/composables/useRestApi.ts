@@ -4,10 +4,6 @@ const instance = axios.create({
 });
 export default async function (method: string, path: string, data: object) {
   const runtimeConfig = useRuntimeConfig();
-//   const token = useCookie("token");
-//   if (!token.value) {
-//     return navigateTo("/");
-//   }
   const config: AxiosRequestConfig = {
     method: method,
     url: runtimeConfig.public.apiURL + path,

@@ -1,14 +1,28 @@
 <template>
-  <Content :header="header">
-    <hr class="md:my-6 my-3" />
-    <div class="grid md:gap-4">
-      <PostItem :data="listNewPosts" />
-    </div>
 
-    <div class="w-full text-center mt-3">
-      <Pagination :data="paginationData" />
-    </div>
-  </Content>
+    <Content :header="header">
+      <hr class="md:my-6 my-3" />
+
+      <div class="grid md:gap-4 relative" >
+       
+        <PostItem :data="listNewPosts" v-if="!showLoading" />
+    
+      </div>
+      <div class="flex items-center flex-col justify-center my-3 relative"  v-if="showLoading">
+        <Skeleton class="block"/>
+        <Skeleton class="block"/>
+        <Skeleton class="block"/>
+        <Skeleton class="block"/>
+        <Skeleton class="block"/>
+        <Skeleton class="block"/>
+        <Spin class="absolute"></Spin>
+      </div>
+      <div class="w-full text-center mt-3">
+      
+        <Pagination @handle-paginate="handlePaginate" :data="paginationData" />
+      </div>
+    </Content>
+ 
 </template>
 
 <script setup lang="ts">
@@ -26,12 +40,16 @@ const header = {
   description: "Lastest Post",
 };
 const listNewPosts = ref<PostOverview[]>([]);
+const showLoading = ref(false)
 const getNewPosts = async () => {
+  showLoading.value = true
+  listNewPosts.value = [];
   const postsData = await useRestApi(POST, "/posts.json", {
-    page: 1,
+    page: paginationData.value.page,
     limit: POST_PAGE_LIMIT,
   });
   if (postsData.status) {
+    let listPosts: PostOverView[] = [];
     postsData.data.forEach((item, index) => {
       let post: PostOverview = {
         title: item.title || "",
@@ -41,10 +59,22 @@ const getNewPosts = async () => {
         author: item.user,
         category: item.category,
       };
-      listNewPosts.value.push(post);
+      listPosts.push(post);
     });
+    listNewPosts.value = listPosts
     paginationData.value.total = postsData.metadata?.total || 1;
   }
+  setTimeout(() => {
+    showLoading.value = false
+  }, 800);
+};
+const handlePaginate = async (page: string) => {
+  let currentPage = parseInt(page);
+  if (!currentPage) {
+    return;
+  }
+  paginationData.value.page = currentPage;
+  await getNewPosts();
 };
 await getNewPosts();
 </script>
