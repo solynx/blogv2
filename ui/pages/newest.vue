@@ -1,31 +1,32 @@
 <template>
+  <Content :header="header">
+    <hr class="md:my-6 my-3" />
 
-    <Content :header="header">
-      <hr class="md:my-6 my-3" />
-
-      <div class="grid md:gap-4 relative" >
-       
-        <PostItem :data="listNewPosts" v-if="!showLoading" />
-    
-      </div>
-      <div class="flex items-center flex-col justify-center my-3 relative"  v-if="showLoading">
-        <Skeleton class="block"/>
-        <Skeleton class="block"/>
-        <Skeleton class="block"/>
-        <Skeleton class="block"/>
-        <Skeleton class="block"/>
-        <Skeleton class="block"/>
-        <Spin class="absolute"></Spin>
-      </div>
-      <div class="w-full text-center mt-3">
-      
-        <Pagination @handle-paginate="handlePaginate" :data="paginationData" />
-      </div>
-    </Content>
- 
+    <div class="grid md:gap-4 relative">
+      <PostItem :data="listNewPosts" v-if="!showLoading" />
+    </div>
+    <div
+      class="flex items-center flex-col justify-center my-3 relative"
+      v-if="showLoading"
+    >
+      <Skeleton class="block" />
+      <Skeleton class="block" />
+      <Skeleton class="block" />
+      <Skeleton class="block" />
+      <Skeleton class="block" />
+      <Skeleton class="block" />
+      <Spin class="absolute"></Spin>
+    </div>
+    <div class="w-full text-center mt-3">
+      <Pagination @handle-paginate="handlePaginate" :data="paginationData" />
+    </div>
+  </Content>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  title: "Tất cả bài viết",
+});
 import { GET, POST } from "~/types/method";
 import { type PostOverview, POST_PAGE_LIMIT } from "~/types/post";
 const route = useRoute();
@@ -37,12 +38,12 @@ const paginationData = ref({
 });
 const header = {
   title: "Mới nhất",
-  description: "Lastest Post",
+  description: "Tất cả bài viết",
 };
 const listNewPosts = ref<PostOverview[]>([]);
-const showLoading = ref(false)
+const showLoading = ref(false);
 const getNewPosts = async () => {
-  showLoading.value = true
+  showLoading.value = true;
   listNewPosts.value = [];
   const postsData = await useRestApi(POST, "/posts.json", {
     page: paginationData.value.page,
@@ -61,11 +62,11 @@ const getNewPosts = async () => {
       };
       listPosts.push(post);
     });
-    listNewPosts.value = listPosts
+    listNewPosts.value = listPosts;
     paginationData.value.total = postsData.metadata?.total || 1;
   }
   setTimeout(() => {
-    showLoading.value = false
+    showLoading.value = false;
   }, 800);
 };
 const handlePaginate = async (page: string) => {

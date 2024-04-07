@@ -25,7 +25,6 @@
 import { NIcon, useMessage } from "naive-ui";
 import {
   PersonCircleOutline as UserIcon,
-  Pencil as EditIcon,
   LogOutOutline as LogoutIcon,
 } from "@vicons/ionicons5";
 const token = useCookie("token");
@@ -40,11 +39,6 @@ const userOptions = [
     icon: renderIcon(UserIcon),
   },
   {
-    label: "Edit Profile",
-    key: "editProfile",
-    icon: renderIcon(EditIcon),
-  },
-  {
     label: "Logout",
     key: "logout",
     icon: renderIcon(LogoutIcon),
@@ -54,6 +48,9 @@ const userOptions = [
 const handleUserProfile = (key: string) => {
   if (key === "logout") {
     return logout();
+  }
+  if (key === "profile") {
+    return navigateTo("/profile");
   }
 };
 const logout = () => {

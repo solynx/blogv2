@@ -5,13 +5,15 @@
       <PostItem :data="listNewPosts" />
     </div>
     <div class="w-full text-center mt-3">
-      <NuxtLink to="/newest" class="text-xl">View more</NuxtLink>
+      <NuxtLink
+        to="/newest"
+        class="text-sm p-3 bg-slate-100 rounded text-[#333] hover:opacity-80"
+        >View more</NuxtLink
+      >
     </div>
-    <div class="mx-3 my-6">
+    <div class="mx-3 my-6 block md:hidden">
       <div class="my-3">
-        <h2 class="text-3xl font-extrabold text-[#333] inline-block">
-          Category
-        </h2>
+        <h2 class="text-3xl text-[#333] inline-block">&#11162; Danh mục</h2>
       </div>
       <div class="block md:grid md:grid-cols-3 md:gap-3">
         <Category :data="listNewCategory" />
@@ -20,6 +22,9 @@
   </Content>
 </template>
 <script setup lang="ts">
+definePageMeta({
+  title: "Home",
+});
 import { GET, POST } from "~/types/method";
 import { type PostOverview } from "~/types/post";
 const header = {

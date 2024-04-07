@@ -2,107 +2,56 @@
   <nav
     class="bg-white shadow-lg h-screen sticky top-0 left-0 w-full md:min-w-[240px] py-6 px-4 font-[sans-serif] hidden md:block overflow-auto"
   >
-    <ul>
-      <li>
-        <a
-          href="javascript:void(0)"
-          class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
-        >
-          Dashboard
-        </a>
-      </li>
-    </ul>
     <div class="mt-4">
-      <h6 class="text-blue-600 text-sm font-bold px-4">Information</h6>
+      <h6 class="text-blue-600 text-sm font-bold px-4">Danh mục</h6>
       <ul class="mt-2">
-        <li>
-          <a
-            href="javascript:void(0)"
+        <li v-for="item in props.listCategory">
+          <NuxtLink
+            :to="'/post/category/' + item.slug"
             class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
           >
-            Audience
-          </a>
-        </li>
-        <li>
-          <a
-            href="javascript:void(0)"
-            class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
-          >
-            Posts
-          </a>
-        </li>
-        <li>
-          <a
-            href="javascript:void(0)"
-            class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
-          >
-            Schedules
-          </a>
-        </li>
-        <li>
-          <a
-            href="javascript:void(0)"
-            class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
-          >
-            Promote
-          </a>
+            {{ item.name }}
+          </NuxtLink>
         </li>
       </ul>
     </div>
     <div class="mt-4">
-      <h6 class="text-blue-600 text-sm font-bold px-4">Income</h6>
+      <h6 class="text-blue-600 text-sm font-bold px-4">Dự kiến tới</h6>
       <ul class="mt-2">
         <li>
           <a
-            href="javascript:void(0)"
+            href="https://deno.com/"
+            target="_blank"
             class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
           >
-            Earnings and taxes
+            Deno
           </a>
         </li>
         <li>
           <a
-            href="javascript:void(0)"
+            href="https://solana.com/vi/developers/guides/getstarted/setup-local-development"
+            target="_blank"
             class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
           >
-            Refunds
+            Solana
           </a>
         </li>
         <li>
           <a
-            href="javascript:void(0)"
+            href="https://www.rust-lang.org/"
+            target="_blank"
             class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
           >
-            Declines
+            Rust
           </a>
         </li>
         <li>
           <a
-            href="javascript:void(0)"
+            href="https://docs.rs/axum/latest/axum/"
+            target="_blank"
             class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
           >
-            Payouts Details
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div class="mt-4">
-      <h6 class="text-blue-600 text-sm font-bold px-4">Actions</h6>
-      <ul class="mt-2">
-        <li>
-          <a
-            href="javascript:void(0)"
-            class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
-          >
-            Profile
-          </a>
-        </li>
-        <li>
-          <a
-            href="javascript:void(0)"
-            class="text-black hover:text-blue-600 text-[15px] block hover:bg-blue-50 rounded px-4 py-2.5 transition-all"
-          >
-            Logout
+            Axum
           </a>
         </li>
       </ul>
@@ -110,12 +59,8 @@
   </nav>
 </template>
 
-<script>
-export default {
-  setup() {
-    return {};
-  },
-};
+<script setup>
+const props = defineProps(["listCategory"]);
 </script>
 
 <style lang="scss" scoped></style>

@@ -20,6 +20,9 @@ func CreateContributeMessage(c *fiber.Ctx) error {
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
 	}
+	if input.Content == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
 	contribute := model.Contribute{
 		Type:    "post",
 		Content: input.Content,

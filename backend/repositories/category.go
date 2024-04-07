@@ -62,3 +62,9 @@ func PublicGetListNewCategory() ([]*model.Category, error) {
 
 	return categories, tx.Error
 }
+
+func PublicGetCategoryBySlug(slug string) (model.Category,int64, error) {
+	var category model.Category
+	result := app.Core.Database.DB.Where("slug = ?", slug).Select("`id`, `name`, `slug`").Find(&category)
+	return category, result.RowsAffected, result.Error
+}

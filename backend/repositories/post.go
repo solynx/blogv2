@@ -99,3 +99,20 @@ func GetListRelatedPost(query config.UIQuery) ([]*model.Post, error) {
 	tx.Limit(4).Order("`created_at` DESC").Select("id, title, slug, user_id, category_id, created_at").Find(&posts)
 	return posts, tx.Error
 }
+
+func GetListPostForUIByCategoryId(query config.UIQuery) ([]*model.Post, config.Pagination, error) {
+	var posts []*model.Post
+	var pagination config.Pagination
+	tx := app.Core.Database.DB.Model(&model.Post{})
+	tx = tx.Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `full_name`")
+	})
+	tx = tx.Preload("Category", func(db *gorm.DB) *gorm.DB {
+		return db.Select("`id`, `name`")
+	})
+	tx.Where("`published` = ? AND `category_id` = ?", true, query.CategoryId)
+	tx.Count(&pagination.Total)
+	tx.Offset(query.GetOffset()).Limit(query.Limit).Order("`created_at` DESC").Select("id, title, description, user_id, slug, category_id, created_at").Find(&posts)
+	pagination.Page = query.GetPage()
+	return posts, pagination, tx.Error
+}

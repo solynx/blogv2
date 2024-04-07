@@ -8,15 +8,5 @@ module.exports = {
     "./app.vue",
     "./error.vue",
   ],
-  theme: {
-    fontFamily: {
-      'sans': ['ui-sans-serif', 'system-ui'],
-      'serif': ['ui-serif', 'Georgia'],
-      'mono': ['ui-monospace', 'SFMono-Regular'],
-      'segoe': ['Segoe Ui Light', 'ui-sans-serif', 'system-ui'],
-    }
-  },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [require("@tailwindcss/typography")],
 };

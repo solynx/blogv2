@@ -8,7 +8,7 @@ import (
 type User struct {
 	Model       `gorm:"embedded"`
 	Email       string          `gorm:"uniqueIndex" json:"email,omitempty"`
-	Password    string          `json:"password,omitempty"`
+	Password    string          `json:"-"`
 	FullName    string          `json:"full_name,omitempty"`
 	Role        string          `json:"role,omitempty"`
 	Verified    bool            `gorm:"default:false" json:"is_verify,omitempty"`

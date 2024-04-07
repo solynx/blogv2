@@ -68,17 +68,21 @@ func setupRouter(app *fiber.App) {
 	system.Get("/category.json", handler.GetCategory)
 	system.Patch("/category.json", handler.UpdateCategory)
 	system.Delete("/category.json", handler.DeleteCategory)
-
+	
+	//profile
+	system.Get("/profile.json", handler.GetProfileUser)
+	system.Patch("/profile.json", handler.UpdateProfileUser)
 	/*
 		API FOR UI
 	*/
 	public.Get("/post.json", handler.GetPostDetailBySlug)
 	public.Post("/related-post.json", handler.PublicGetRelatedPosts)
 	public.Post("/posts.json", handler.PublicGetListPost)
+	public.Post("/category-posts.json", handler.PublicGetListPostByCategory)
 
 	//category
 	public.Get("/new-categories.json", handler.PublicGetListNewCategory)
-
+	public.Get("/category.json", handler.PublicFindCategoryBySlug)
 	//contribute
 	public.Post("/contribute.json", handler.CreateContributeMessage)
 }

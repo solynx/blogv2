@@ -22,8 +22,13 @@ func (server *ServerConfig) Start() {
 }
 
 func (server *ServerConfig) Setup() {
+	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = "8000"
+	}
+
 	server.App = fiber.New()
-	server.Port = ":8080"
+	server.Port = ":" + port
 
 	//load public key
 	// pubKey, err := os.ReadFile(rsaPrivateKeyLocation)

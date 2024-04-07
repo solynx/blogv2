@@ -3,3 +3,6 @@
 /ui/.nuxt
 /cms/.nuxt
 /cms/node_modules
+backend/docker/db/data/#innodb_redo/
+backend/docker/*
+

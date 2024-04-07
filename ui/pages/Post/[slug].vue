@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div  v-if="!foundPost">
+    <div v-if="!foundPost">
       <div
         class="bg-red-50 border-s-4 border-red-500 p-4 dark:bg-red-800/30"
         role="alert"
@@ -41,7 +41,7 @@
         <Button :href="'/'"> Trang chủ</Button>
       </div>
     </div>
-    <Content :header="header"   v-if="foundPost">
+    <Content :header="header" v-if="foundPost">
       <div class="grid md:gap-4">
         <div
           class="flex items-center flex-col justify-center my-3 relative"
@@ -52,7 +52,10 @@
         </div>
         <PostDetail :data="postDetail" v-if="!showLoading" />
       </div>
-      <TextArea class="mt-3" @handle-create-contribute="handleCreateContribute"/>
+      <TextArea
+        class="mt-3"
+        @handle-create-contribute="handleCreateContribute"
+      />
       <div v-if="!showLoading">
         <h2 class="text-xl md:text-2xl font-segoe text-bold inline-block mt-3">
           Bài viết liên quan
@@ -61,14 +64,18 @@
           <PostSmallCart :data="relatedPostsData" />
         </div>
       </div>
-
     </Content>
   </div>
 </template>
 
 <script setup lang="ts">
 import { GET, POST } from "~/types/method";
-import { type PostDetail } from "~/types/post";
+import {
+  type PostDetail,
+  SEO_TITLE_DEFAULT,
+  SEO_KEYWORDS_DEFAULT,
+  SEO_DESCRIPTION_DEFAULT,
+} from "~/types/post";
 const header = {
   title: "Bài viết",
 };
@@ -79,15 +86,15 @@ const postDetail = ref<PostDetail>({
   author: {},
   category: {},
 });
-const foundPost = ref(false)
+const foundPost = ref(true);
 const relatedPostsData = ref(null);
 const route = useRoute();
 const showLoading = ref(false);
-const contributeContent = ref("")
+const contributeContent = ref("");
 const getPostDetail = async () => {
   showLoading.value = true;
   let post = await useRestApi(GET, `/post.json?slug=${route.params?.slug}`);
-  foundPost.value = post.status
+  foundPost.value = post?.status;
   if (post.status) {
     let data = post.data;
     postDetail.value = {
@@ -98,6 +105,13 @@ const getPostDetail = async () => {
       category: data.category,
       createdAt: useFormatDate(data.created_at),
     };
+    useSeoMeta({
+      title: `Retherer Blog | Post - ${data.title}`,
+      ogTitle: data?.seo_title ?? SEO_TITLE_DEFAULT,
+      description: data?.seo_description ?? SEO_DESCRIPTION_DEFAULT,
+      ogDescription: data?.seo_description ?? SEO_DESCRIPTION_DEFAULT,
+      keywords: data?.seo_keywords ? data?.seo_keywords : SEO_KEYWORDS_DEFAULT,
+    });
     await getRelatedPost();
   }
   setTimeout(() => {
@@ -106,29 +120,32 @@ const getPostDetail = async () => {
 };
 
 async function getRelatedPost() {
-    let relatedPosts = await useRestApi(POST, `/related-post.json`, {
+  let relatedPosts = await useRestApi(POST, `/related-post.json`, {
     user_id: postDetail.value.author.id,
     category_id: postDetail.value.category.id,
     slug: route.params?.slug,
-    });
-    if (relatedPosts.status) {
-      relatedPostsData.value = relatedPosts.data;
-    }
+  });
+  if (relatedPosts.status) {
+    relatedPostsData.value = relatedPosts.data;
+  }
 }
 
-async function handleCreateContribute(content: object, status: object, showMessage: object) {
+async function handleCreateContribute(
+  content: object,
+  status: object,
+  showMessage: object
+) {
   let result = await useRestApi(POST, `/contribute.json`, {
     content: content.value,
     post_id: postDetail.value.id,
-    type: "post"
+    type: "post",
   });
-  if(result.status) {
-    status.value = true
-    content.value = ""
-    showMessage.value = true
-  }
-  else{
-    status.value = false
+  if (result.status) {
+    status.value = true;
+    content.value = "";
+    showMessage.value = true;
+  } else {
+    status.value = false;
   }
 }
 getPostDetail();

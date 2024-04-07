@@ -8,105 +8,113 @@
         :pagination="pagination"
       />
 
-      <n-modal v-model:show="showDetailPost" transform-origin="center">
+      <n-modal
+        v-model:show="showDetailPost"
+        transform-origin="center"
+        :block-scroll="false"
+      >
         <n-card
-          style="position: fixed; width: 80%; top: 10%; left: 10%"
+          style="position: fixed; width: 80%; top: 2%; left: 10%; height: auto"
           title="Sửa danh mục"
           :bordered="false"
           size="huge"
           role="dialog"
           aria-modal="true"
+          :block-scroll="false"
         >
-          <NGrid x-gap="12" :cols="4">
-            <NGi span="2">
-              <NFormItem label="Tiêu đề bài viết">
-                <n-input
-                  type="text"
-                  placeholder="Waiting..."
-                  v-model:value="postDataDetail.title"
-                />
-              </NFormItem>
-            </NGi>
-            <NGi>
-              <NFormItem label="Slug">
-                <n-input
-                  type="text"
-                  placeholder="Waiting..."
-                  v-model:value="postDataDetail.slug"
-                  disabled
-                />
-              </NFormItem>
-            </NGi>
-            <NGi>
-              <NFormItem label="Người tạo">
-                <n-input
-                  type="text"
-                  placeholder="Waiting..."
-                  disabled
-                  v-model:value="postDataDetail.author"
-                />
-              </NFormItem>
-            </NGi>
-            <NGi span="2">
-              <NFormItem label="Mô tả ngắn">
-                <n-input
-                  type="text"
-                  placeholder="Waiting..."
-                  v-model:value="postDataDetail.description"
-                />
-              </NFormItem>
-            </NGi>
-            <NGi>
-              <NFormItem label="Danh mục">
-                <n-select
-                  v-model:value="postDataDetail.category_id"
-                  filterable
-                  placeholder="Chọn danh mục"
-                  :options="categoryOptions"
-                />
-              </NFormItem>
-            </NGi>
-            <NGi>
-              <NFormItem label="Trạng thái">
-                <n-switch v-model:value="postDataDetail.published" />
-              </NFormItem>
-            </NGi>
-            <NGi span="4">
-              <NFormItem label="Content">
-              <TiptapEditor :editor="editor" class="w-full" />
-            </NFormItem>
-            </NGi>
-            <NGi span="2">
-              <NFormItem label="Tiêu đề SEO">
-                <n-input
-                  type="text"
-                  placeholder="Nhập tiêu đề..."
-                  v-model:value="postDataDetail.seo_title"
-                />
-              </NFormItem>
-            </NGi>
-            <NGi span="2">
-              <NFormItem label="Từ khóa SEO">
-                <n-input
-                  type="text"
-                  placeholder="Nhập từ khóa..."
-                  v-model:value="postDataDetail.seo_keywords"
-                />
-              </NFormItem>
-            </NGi>
-            <NGi span="4">
-              <NFormItem label="Mô tả SEO">
-                <n-input
-                  type="textarea"
-                  placeholder="Nhập mô tả..."
-                  v-model:value="postDataDetail.seo_description"
-                />
-              </NFormItem>
-            </NGi>
-
-          </NGrid>
+          <NScrollbar style="max-height: 500px">
+            <NGrid x-gap="12" :cols="4">
+              <NGi span="2">
+                <NFormItem label="Tiêu đề bài viết">
+                  <n-input
+                    type="text"
+                    placeholder="Waiting..."
+                    v-model:value="postDataDetail.title"
+                  />
+                </NFormItem>
+              </NGi>
+              <NGi>
+                <NFormItem label="Slug">
+                  <n-input
+                    type="text"
+                    placeholder="Waiting..."
+                    v-model:value="postDataDetail.slug"
+                    disabled
+                  />
+                </NFormItem>
+              </NGi>
+              <NGi>
+                <NFormItem label="Người tạo">
+                  <n-input
+                    type="text"
+                    placeholder="Waiting..."
+                    disabled
+                    v-model:value="postDataDetail.author"
+                  />
+                </NFormItem>
+              </NGi>
+              <NGi span="2">
+                <NFormItem label="Mô tả ngắn">
+                  <n-input
+                    type="text"
+                    placeholder="Waiting..."
+                    v-model:value="postDataDetail.description"
+                  />
+                </NFormItem>
+              </NGi>
+              <NGi>
+                <NFormItem label="Danh mục">
+                  <n-select
+                    v-model:value="postDataDetail.category_id"
+                    filterable
+                    placeholder="Chọn danh mục"
+                    :options="categoryOptions"
+                  />
+                </NFormItem>
+              </NGi>
+              <NGi>
+                <NFormItem label="Trạng thái">
+                  <n-switch v-model:value="postDataDetail.published" />
+                </NFormItem>
+              </NGi>
+              <NGi span="4">
+                <NFormItem label="Content">
+                  <TiptapEditor :editor="editor" class="w-full" />
+                </NFormItem>
+              </NGi>
+              <NGi span="2">
+                <NFormItem label="Tiêu đề SEO">
+                  <n-input
+                    type="text"
+                    placeholder="Nhập tiêu đề..."
+                    v-model:value="postDataDetail.seo_title"
+                  />
+                </NFormItem>
+              </NGi>
+              <NGi span="2">
+                <NFormItem label="Từ khóa SEO">
+                  <n-input
+                    type="text"
+                    placeholder="Nhập từ khóa..."
+                    v-model:value="postDataDetail.seo_keywords"
+                  />
+                </NFormItem>
+              </NGi>
+              <NGi span="4">
+                <NFormItem label="Mô tả SEO">
+                  <n-input
+                    type="textarea"
+                    placeholder="Nhập mô tả..."
+                    v-model:value="postDataDetail.seo_description"
+                  />
+                </NFormItem>
+              </NGi>
+            </NGrid>
+          </NScrollbar>
           <template #footer>
-              <NButton type="info" @click="handleUpdatePost">Lưu thông tin</NButton>
+            <NButton type="info" @click="handleUpdatePost"
+              >Lưu thông tin</NButton
+            >
           </template>
         </n-card>
       </n-modal>
@@ -169,7 +177,7 @@ const postDataDetail = ref<PostDataDetail>({
   seo_title: null,
   seo_keywords: null,
   seo_description: null,
-  published: false
+  published: false,
 });
 const createColumns = ({
   view,
@@ -266,16 +274,18 @@ const editor = useEditor({
     }),
     TiptapImage.configure({
       inline: true,
-    }), 
+    }),
     TiptapTextAlign.configure({
-    types: ['heading', 'paragraph'],}),
+      types: ["heading", "paragraph"],
+    }),
     TiptapYoutube.configure({
-          controls: false,
-        })
+      controls: false,
+    }),
   ],
   editorProps: {
     attributes: {
-      class: "border px-3 prose !max-w-screen-2xl prose-sm sm:prose-base  m-5 focus:outline-none",
+      class:
+        "border px-3 prose !max-w-screen-2xl prose-sm sm:prose-base  m-5 focus:outline-none",
     },
   },
 });
@@ -321,7 +331,7 @@ const handleGetDetailPost = async (id: string) => {
       seo_keywords: data.seo_keywords,
       category_id: data.category.id,
     };
-    editor.value.commands.setContent(postDataDetail.value.content)
+    editor.value.commands.setContent(postDataDetail.value.content);
   }
 };
 
@@ -342,26 +352,29 @@ const handleGetListCategory = async () => {
 const handleUpdatePost = async () => {
   loadingBar.start();
   postDataDetail.value.content = editor.value.getHTML();
-  let result = await useRestApi(Method.PATCH, POST_ENDPOINT, postDataDetail.value);
-  showDetailPost.value = !showDetailPost.value
-  if(result.status) {
-    loadingBar.finish();
-    message.success("Cập nhật thành công!", {duration: 1000});
-    return convertDataForTable();
-  }
-  else{
-    loadingBar.error();
-    return message.error("Cập nhật không thành công!")
-  }
-}
-const onConfirmDeleteClick = async (id : string) => {
-  let result = await useRestApi(Method.DELETE, POST_ENDPOINT, {id});
+  let result = await useRestApi(
+    Method.PATCH,
+    POST_ENDPOINT,
+    postDataDetail.value
+  );
+  showDetailPost.value = !showDetailPost.value;
   if (result.status) {
-    message.success("Xóa thành công!", {duration: 1000});
+    loadingBar.finish();
+    message.success("Cập nhật thành công!", { duration: 1000 });
+    return convertDataForTable();
+  } else {
+    loadingBar.error();
+    return message.error("Cập nhật không thành công!");
+  }
+};
+const onConfirmDeleteClick = async (id: string) => {
+  let result = await useRestApi(Method.DELETE, POST_ENDPOINT, { id });
+  if (result.status) {
+    message.success("Xóa thành công!", { duration: 1000 });
     return convertDataForTable();
   }
-  return message.error("Xóa thất bại")
-}
+  return message.error("Xóa thất bại");
+};
 convertDataForTable();
 handleGetListCategory();
 </script>

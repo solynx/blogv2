@@ -4,7 +4,7 @@ import (
 	"blogv2/app"
 	"blogv2/config"
 	"blogv2/model"
-	repo "blogv2/repositories"
+	"blogv2/repositories"
 	"log"
 	"time"
 
@@ -26,6 +26,11 @@ type PayloadClaims struct {
 	jwt.RegisteredClaims
 }
 
+type UpdateInput struct{
+	FullName string `json:"full_name"`
+	Password string `json:"password"`
+}
+
 func Login(c *fiber.Ctx) error {
 	var userInfo Identity
 	if err := c.BodyParser(&userInfo); err != nil {
@@ -33,13 +38,13 @@ func Login(c *fiber.Ctx) error {
 	}
 	hashedPassword := sha256.Sum256([]byte(userInfo.Password))
 
-	user, row := repo.FindUserLogin(userInfo.Email, hex.EncodeToString(hashedPassword[:]))
+	user, row := repositories.FindUserLogin(userInfo.Email, hex.EncodeToString(hashedPassword[:]))
 	if row == 0 {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 	//update last login
 	user.LastLoginId = uuid.New()
-	row, err := repo.UpdateUser(user)
+	row, err := repositories.UpdateUser(user)
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Please check connect"})
@@ -77,9 +82,54 @@ func Register(c *fiber.Ctx) error {
 		Password: hex.EncodeToString(hashedPassword[:]),
 		Role:     model.ADMIN_ROLE,
 	}
-	err := repo.CreateUser(&newUser)
+	err := repositories.CreateUser(&newUser)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Register failed!"})
 	}
 	return c.Status(fiber.StatusCreated).JSON(&config.Response{Code: 200, Status: true, Message: "Create user successfully!"})
+}
+
+func GetProfileUser(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(model.User)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Permission denied"})
+	} 
+	user, row, err := repositories.GetUserById(user.ID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Can't find data"})
+	}
+	if row == 0 {
+		return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 400, Status: false, Message: "Can't find data"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: user})
+}
+
+func UpdateProfileUser(c *fiber.Ctx) error {
+	user, ok := c.Locals("user").(model.User)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Permission denied"})
+	} 
+	var input UpdateInput
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Check your arg"})
+	}
+	user, row, err := repositories.GetUserById(user.ID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Can't find data"})
+	}
+	if row == 0 {
+		return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 400, Status: false, Message: "Can't find data"})
+	}
+	if len(input.Password) > 8 {
+		hashedPassword := sha256.Sum256([]byte(input.Password))
+		user.Password = hex.EncodeToString(hashedPassword[:])
+	}
+	if input.FullName != "" {
+		user.FullName = input.FullName
+	}
+	_, errU := repositories.UpdateUser(user)
+	if errU != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Update failed"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success"})
 }

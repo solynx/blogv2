@@ -131,3 +131,21 @@ func PublicGetListNewCategory(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data})
 }
+
+func PublicFindCategoryBySlug(c *fiber.Ctx) error {
+	slugs := c.Queries()
+	slug := slugs["slug"]
+
+	if slug == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Review your arg"})
+	}
+	category, row, err := repositories.PublicGetCategoryBySlug(slug)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Check arg"})
+	}
+	if row == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 200, Status: false, Message: "Not found"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Data: category})
+	
+}

@@ -13,7 +13,9 @@
       {{ item.title }}
     </NuxtLink>
     <div class="flex flex-wrap items-center gap-3 mt-3">
-      <p class="text-xs text-gray-400">BY {{ item.user.full_name }}</p>
+      <p class="text-xs text-gray-400">
+        @ {{ item.user?.full_name || "author" }}
+      </p>
     </div>
   </div>
 </template>

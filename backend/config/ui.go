@@ -3,9 +3,9 @@ package config
 import "github.com/google/uuid"
 
 type UIQuery struct {
-	Slug       string
-	Page       int
-	Limit      int
+	Slug       string `json:"slug"`
+	Page       int `json:"page"`
+	Limit      int `json:"limit"`
 	CategoryId *uuid.UUID `json:"category_id"`
 	UserId     *uuid.UUID `json:"user_id"`
 	RecordId   uuid.UUID  `json:"record_id"`

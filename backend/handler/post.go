@@ -13,7 +13,8 @@ import (
 type PostSchema struct {
 	Title          string    `json:"title"`
 	Description    string    `json:"description"`
-	Content        string    `gorm:"type:text" json:"content"`
+	Content        string    `json:"content"`
+	Published *bool 	`json:"published"`
 	SEOTitle       *string   `json:"seo_title"`
 	SEOKeywords    *string   `json:"seo_keywords"`
 	SEODescription *string   `json:"seo_description"`
@@ -41,7 +42,7 @@ func CreatePost(c *fiber.Ctx) error {
 	if err := c.BodyParser(&args); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.Response{Code: 400, Status: false, Message: "Bad Request", Error: "Please check args sended"})
 	}
-	newPost := &model.Post{Title: args.Title, UserId: user.ID, CategoryId: args.CategoryId, Description: args.Description, Content: args.Content, SEOTitle: args.SEOTitle, SEOKeywords: args.SEOKeywords, SEODescription: args.SEODescription}
+	newPost := &model.Post{Title: args.Title, UserId: user.ID, Published: args.Published, CategoryId: args.CategoryId, Description: args.Description, Content: args.Content, SEOTitle: args.SEOTitle, SEOKeywords: args.SEOKeywords, SEODescription: args.SEODescription}
 	newPost.ID = uuid.New()
 	newPost.Slug = helpers.GetSlug(newPost.Title, newPost.ID)
 	row, err := repositories.CreatePost(newPost)
@@ -170,4 +171,16 @@ func PublicGetRelatedPosts(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Can't get data"})
 	}
 	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data})
+}
+
+func PublicGetListPostByCategory(c *fiber.Ctx) error {
+	var uiQuery config.UIQuery
+	if err := c.BodyParser(&uiQuery); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Please check arg"})
+	}
+	data, pagination, err := repositories.GetListPostForUIByCategoryId(uiQuery)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&config.ErrorSchema{Code: 400, Status: false, Message: "Can't get data"})
+	}
+	return c.Status(fiber.StatusOK).JSON(&config.Response{Code: 200, Status: true, Message: "Success", Data: data, Metadata: pagination})
 }

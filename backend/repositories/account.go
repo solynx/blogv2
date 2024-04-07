@@ -29,8 +29,9 @@ func UpdateUser(user model.User) (int64, error) {
 	return result.RowsAffected, result.Error
 }
 
-// func GetUserByUid(id uuid.UUID) (model.UserData, int64) {
-// 	var userData = model.UserData{}
-// 	result := app.Core.Database.DB.Model(&model.User{}).Where("id = ?", id).Find(&userData)
-// 	return userData, result.RowsAffected
-// }
+func GetUserById(id uuid.UUID) (model.User, int64, error) {
+	var user model.User
+	result := app.Core.Database.DB.Where("id = ?", id).Find(&user) 
+	return user, result.RowsAffected, result.Error
+} 
+

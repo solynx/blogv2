@@ -1,61 +1,61 @@
 <template>
   <NLoadingBarProvider>
     <NModalProvider>
-    <NMessageProvider>
-      <div class="relative h-screen">
-        <n-layout position="absolute" has-sider>
-          <n-layout-header
-            style="height: 64px; padding: 24px; display: flex"
-            bordered
-            class="bg-[#4CB5F5] items-center justify-between"
-          >
-            <Header />
-          </n-layout-header>
-          <n-layout
-            has-sider
-            position="absolute"
-            style="top: 64px; bottom: 64px"
-          >
-            <ClientOnly>
-              <n-space vertical>
-                <n-layout has-sider>
-                  <n-layout-sider
-                    bordered
-                    collapse-mode="width"
-                    :collapsed-width="64"
-                    :width="240"
-                    :collapsed="collapsed"
-                    show-trigger
-                    @collapse="collapsed = true"
-                    @expand="collapsed = false"
-                  >
-                    <n-menu
-                      v-model:value="activeKey"
-                      :collapsed="collapsed"
+      <NMessageProvider>
+        <div class="relative h-screen">
+          <n-layout position="absolute" has-sider>
+            <n-layout-header
+              style="height: 64px; padding: 24px; display: flex"
+              bordered
+              class="bg-[#4CB5F5] items-center justify-between"
+            >
+              <Header />
+            </n-layout-header>
+            <n-layout
+              has-sider
+              position="absolute"
+              style="top: 64px; bottom: 64px"
+            >
+              <ClientOnly>
+                <n-space vertical>
+                  <n-layout has-sider>
+                    <n-layout-sider
+                      bordered
+                      collapse-mode="width"
                       :collapsed-width="64"
-                      :collapsed-icon-size="22"
-                      :options="menuOptions"
-                    />
-                  </n-layout-sider>
-                </n-layout>
-              </n-space>
-            </ClientOnly>
-            <n-layout embedded content-style="padding: 24px;">
-              <slot />
+                      :width="240"
+                      :collapsed="collapsed"
+                      show-trigger
+                      @collapse="collapsed = true"
+                      @expand="collapsed = false"
+                    >
+                      <n-menu
+                        v-model:value="activeKey"
+                        :collapsed="collapsed"
+                        :collapsed-width="64"
+                        :collapsed-icon-size="22"
+                        :options="menuOptions"
+                      />
+                    </n-layout-sider>
+                  </n-layout>
+                </n-space>
+              </ClientOnly>
+              <n-layout embedded content-style="padding: 24px;">
+                <slot />
+              </n-layout>
             </n-layout>
+            <n-layout-footer
+              bordered
+              position="absolute"
+              style="height: 64px; padding: 24px"
+              class="bg-[#4CB5F5]"
+            >
+              Footer
+            </n-layout-footer>
           </n-layout>
-          <n-layout-footer
-            bordered
-            position="absolute"
-            style="height: 64px; padding: 24px"
-            class="bg-[#4CB5F5]"
-          >
-            Footer
-          </n-layout-footer>
-        </n-layout>
-      </div>
-    </NMessageProvider>
-  </NModalProvider>
+        </div>
+      </NMessageProvider>
+    </NModalProvider>
   </NLoadingBarProvider>
 </template>
 
@@ -81,7 +81,14 @@ function renderIcon(icon: Component) {
 
 const menuOptions: MenuOption[] = [
   {
-    label: "Overview",
+    label: () =>
+      h(
+        MyNuxtLink,
+        {
+          to: "/",
+        },
+        "Thống kê"
+      ),
     key: "overview",
     icon: renderIcon(PieChartIcon),
   },

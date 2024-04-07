@@ -3,7 +3,6 @@ package app
 import (
 	"blogv2/database"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -23,10 +22,9 @@ type DatabaseConfig struct {
 func (config *DatabaseConfig) getConfigFile() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Failed to load .env file, Err: %s", err)
+		fmt.Println("Failed to load .env file")
 	}
 	//after config with env file or docker compose
-	fmt.Println(os.Getenv("DATABASE_USER"))
 	config.UserName = os.Getenv("DATABASE_USER")
 	config.Password = os.Getenv("DATABASE_PASSWORD")
 	config.IPAddress = os.Getenv("DATABASE_IP")
