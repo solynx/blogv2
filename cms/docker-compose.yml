@@ -1,0 +1,9 @@
+version: '3'
+services:
+    blog-cms:
+      build: .
+      enviroments:
+        NUXT_HOST: 0.0.0.0
+        NUXT_PORT: 3000
+        NUXT_PUBLIC_API_URL: http://127.0.0.1:8080/api
+        NUXT_API_KEY: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1

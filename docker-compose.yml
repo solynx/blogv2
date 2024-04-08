@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: yySikgfkTJcHAeGVAEpTEDdZXhExP3Yr
+      MYSQL_DATABASE: blogv1
+      MYSQL_USER: sammy
+      MYSQL_PASSWORD: fncHmanHRAV5gsguqYa0fAyX9RMAkDH7
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+    ports:
+      - "3306:3306"
+    volumes:
+      - "db:/var/lib/mysql"
+      # - "./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf"
+      # - "./docker/db/sql:/docker-entrypoint-initdb.d"
+    restart: always
+  v2-server:
+    image: blogv2/backend
+    environment:
+      DATABASE_USER: sammy
+      DATABASE_PASSWORD: fncHmanHRAV5gsguqYa0fAyX9RMAkDH7
+      DATABASE_PORT: 3306
+      DATABASE_IP: db
+      DATABASE_NAME: blogv1
+      APP_PORT: 8080
+      X_API_KEY: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1
+    depends_on:
+      - db
+    links:
+      - db
+    ports:
+      - "8080:8080"
+    restart: always
+  v2-cms:
+    image: blogv2/cms
+    environment:
+      # NUXT_HOST: 0.0.0.0
+      PORT: 3001
+      NUXT_PUBLIC_API_URL: http://127.0.0.1:8080/api
+      NUXT_API_KEY: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1
+    ports:
+      - "3001:3001"
+    restart: always
+  v2-ui:
+    image: blogv2/ui
+    environment:
+      PORT: 3000
+      NUXT_PUBLIC_API_URL: http://127.0.0.1:8080/api/v1/public
+      NUXT_API_KEY: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1
+    ports:
+      - "3000:3000"
+    restart: always
+volumes:
+  db:
+    driver: local

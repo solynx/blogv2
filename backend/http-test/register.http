@@ -1,9 +1,9 @@
-POST http://localhost:3006/api/account/register.json
+POST http://localhost:8080/api/account/register.json
 Authorization: Bearer 192929
 x-api-key: ENqKRmbFzPAbXN5VRfdq7hVNEjztVRV1
 Content-Type: application/json
 
 {
     "email" : "alidoan21@gmail.com",
-    "password" : "alo123",
+    "password" : "alo123"
 }
